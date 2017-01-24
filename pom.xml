@@ -1,0 +1,122 @@
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+		 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>io.github.levitics</groupId>
+		<artifactId>base-pom</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<relativePath>base-pom</relativePath>
+	</parent>
+
+	<artifactId>organisation-pom</artifactId>
+	<packaging>pom</packaging>
+	<version>1.0-SNAPSHOT</version>
+	
+	<name>${corporateName} Parent POM</name>
+    <inceptionYear>2014</inceptionYear>
+	
+	<modules>
+		<!--module>base-pom</module>
+		<module>closedsource-pom</module>
+		<module>private-pom</module>
+		<module>product-pom</module>
+		<module>public-pom</module>
+		<module>central-pom</module-->
+<!--
+		<module>organization-poms-maven-enforcer-rules</module>
+-->
+	</modules>
+
+	<scm>
+		<connection>${github.scm.con}</connection>
+		<developerConnection>${github.dev.con}</developerConnection>
+		<url>${github.scm.url}</url>
+		<tag>${scm.tag}</tag>		
+	</scm>
+	
+	<properties>
+		<github.scm.host>github.com</github.scm.host>
+		<github.scm.con>scm:git:https://${github.scm.host}/${corporateName}/${project.artifactId}</github.scm.con>
+		<github.scm.dev.con>scm:git:git@${github.scm.host}:${corporateName}/${project.artifactId}</github.scm.dev.con>
+		<github.scm.url>https://${github.scm.host}/${corporateName}/${project.artifactId}</github.scm.url>
+		
+		<bitbucket.scm.host>bitbucket.org</bitbucket.scm.host>
+		<bitbucket.scm.con>scm:git:ssh://git@${bitbucket.scm.host}/${corporateName}/${project.artifactId}.git</bitbucket.scm.con>
+        <bitbucket.scm.dev.con>scm:git:ssh://git@${bitbucket.scm.host}/${corporateName}/${project.artifactId}.git</bitbucket.scm.dev.con>
+        <bitbucket.scm.url>https://${bitbucket.scm.host}/${corporateName}/${project.artifactId}</bitbucket.scm.url>
+
+		<scm.tag>HEAD</scm.tag>		
+	</properties>
+
+	<!--dependencies>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>closedsource-pom</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>private-pom</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>product-pom</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>public-pom</artifactId>
+			<version>${project.version}</version>
+			<type>pom</type>
+		</dependency>
+	</dependencies-->
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<tagNameFormat>v@{project.version}</tagNameFormat>
+					<autoVersionSubmodules>true</autoVersionSubmodules>
+					<arguments>-Dmaven.install.skip=true -Dskip.nexus.staging</arguments>
+					<!-- 
+                    From https://github.com/sonatype/nexus-maven-plugins/tree/master/staging/maven-plugin
+                    It's not supported to have deferred (default for snapshot) and 
+                    staging (default for releses) strategies in the same reactor. 
+                    So during the release of the parent poms, we disabled the deferred ones. 
+                    As we have nexus staging working for the parent poms, we want to call deploy instead of deploy:deploy
+					-->
+					<goals>deploy</goals>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-invoker-plugin</artifactId>
+				<version>1.9</version>
+				<configuration>
+					<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+					<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+				</configuration>
+				<executions>
+					<execution>
+						<id>integration-tests</id>
+						<goals>
+							<goal>install</goal>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

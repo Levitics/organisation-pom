@@ -1,0 +1,84 @@
+<?xml version="1.0" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+		http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+		<groupId>io.github.levitics</groupId>
+		<artifactId>base-pom</artifactId>
+		<version>1.0-SNAPSHOT</version>
+        <relativePath>../base-pom</relativePath>
+    </parent>
+
+    <artifactId>public-pom</artifactId>
+    <packaging>pom</packaging>
+
+    <name>${corporateName} Public POM</name>
+    <licenses>
+        <license>
+            <name>BSD License</name>
+            <url>https://maven.atlassian.com/public/licenses/license.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://jira.atlassian.com/browse/APUBPOM</url>
+    </issueManagement>
+	
+	<properties>
+		<distribution.snapshotRepositoryName>${corporate} Public Development Snapshot Repository</distribution.snapshotRepositoryName>
+		<distribution.snapshotRepositoryId>m2-snapshot-repository</distribution.snapshotRepositoryId>
+		<distribution.snapshotRepositoryUrl>https://maven.${corporate}/public-snapshot</distribution.snapshotRepositoryUrl>
+		
+		<distribution.releaseRepositoryName>${corporate} Public Release Distribution Repository</distribution.releaseRepositoryName>
+		<distribution.releaseRepositoryId>m2-release-repository</distribution.releaseRepositoryId>
+		<distribution.releaseRepositoryUrl>https://maven.${corporate}/public</distribution.releaseRepositoryUrl>
+	</properties>
+	
+    <distributionManagement>
+        <repository>
+			<id>${distribution.releaseRepositoryId}</id>
+			<url>${distribution.releaseRepositoryUrl}</url>
+			<name>${distribution.releaseRepositoryName}</name>           
+        </repository>
+        <snapshotRepository>
+			<id>${distribution.snapshotRepositoryId}</id>
+			<url>${distribution.snapshotRepositoryUrl}</url>
+			<name>${distribution.snapshotRepositoryName}</name>  
+        </snapshotRepository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>nexusStaging</id>
+            <activation>
+              <property>
+                <name>!skip.nexus.staging</name>
+              </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>

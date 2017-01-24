@@ -1,0 +1,597 @@
+<?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<document>
+
+ <properties>
+  <title>Cutting The Release</title>
+  <author email="dev@commons.apache.org">Commons Documentation Team</author>
+ </properties>
+
+<body> 
+
+<section name='Cutting The Release - Step By Step'>
+  <subsection name="0 Introduction">
+    <p>
+    This document gives step-by-step instructions for cutting a release. These instructions
+    assume that the component uses <code>Maven</code> to build the site, and either
+    Maven or Ant to build the actual distributed files.
+    </p>
+    <p>
+    This documentation is pretty *nix-centric. Hopefully, release managers using windoz will
+    be able to work out what they need to do for their platform. Any patches for windoz-based
+    releases will be gratefully received.
+    </p>
+
+    <p>
+    Throughout this document, the <code>example text</code> consistently assumes that version <em>1.2</em> 
+    of component <em>foo</em> is being released by release manager <em>rdonkin</em>.
+    </p>
+    <p>
+    The starting point for this document is that all the preparations for the release have been completed,
+    a release candidate created and a release <code>[VOTE]</code> successfully passed. 
+    Guidelines for these preparations can be found <a href='prepare.html'>here</a>.
+    </p>
+    <p>
+    In particular, it is assumed:
+    <ul>
+      <li>
+        The build version for the component has been updated to the release number in project.xml
+      </li>
+      <li>
+        The build version for the component has been updated to the release number in build.xml if
+	you have a hand-created Ant buildfile.
+      </li>
+      <li>
+        The release directory <code>tags/foo-1.2</code> has been created.
+      </li>
+    </ul>
+    </p>
+  </subsection>
+  
+  <subsection name="1 Build Distribution Files">
+    <p>
+      Ensure commons-build is available as a sibling directory to the one you
+      will be doing the build in. The most convenient way to do this is simply
+      to check out commons-build into its usual place, then create a symbolic
+      link to it:
+      <pre>
+	# we will be building in foo/tags/foo-1.2
+        cd foo/tags
+	# create a link from ./commons-build to wherever the trunk of
+	# commons-build has been checked out
+	ln -s {commons-build}/trunk commons-build
+      </pre>
+    </p>
+    <p>
+      Now do a clean build of the binary distribution.
+    </p>
+    <p>For Maven builds, it is assumed that there is a "dist" goal which creates
+    source and binary distributions in subdirectory target/distributions.
+    <pre>
+      $ cd foo/tags/foo-1.2
+      $ maven clean
+      $ maven dist
+    </pre>
+    </p>
+    <p>
+    For Ant builds, it is assumed that there is a "dist" target which
+    creates source and binary distribution (.tgz, .zip) bundles.
+    <pre>
+      $ cd foo/tags/foo-1.2
+      $ ant clean
+      $ ant dist
+    </pre>
+    </p>
+    <p>
+     Review the generated documentation and in particular ensure that the version number
+     is correct.
+    </p>
+    </subsection>
+    
+    <subsection name='2 Create Checksums'>
+    <p>
+    MD5 is the standard hash algorithm used by Apache to allow users to verify the integrity of releases. 
+    There are various applications which can be used to create md5 checksums. 
+    </p>
+    <p>
+    For example md5sum (on Linux):
+    <pre>
+    $ md5sum -b commons-foo-1.2-src.tar.gz > commons-foo-1.2-src.tar.gz.md5
+    </pre>
+    </p>
+    <p>
+    If possible, the format of the output should conform to the ASF repository standard.
+    Currently, this is <code>sum filename</code>. For example:
+    </p>
+    <pre>
+    d1dcb0fbee884bb855bb327b8190af36 *commons-foo-1.2.tar.gz
+    </pre>
+    <p>
+    Create md5 sums for the binary and source releases, both tarred and zipped versions. 
+    These should be stored in files whose names are formed by appending <code>.md5</code>.
+    to each filename.  So, you should end up with the following files:
+    <pre>
+    commons-foo-1.2-src.tar.gz.md5
+    commons-foo-1.2-src.zip.md5
+    commons-foo-1.2.tar.gz.md5
+    commons-foo-1.2.zip.md5
+    </pre>
+    </p>
+  </subsection>
+
+  <subsection name='3 Sign Releases'>
+    <p>
+    OpenPGP (RFC2440) compatible detached signatures needed to be created for all releases.
+    Various applications can be used to create these signatures.  For example,
+    <a href='http://www.gnupg.org'>Gnu Privacy Guard</a>.
+    </p>
+    <p>
+    See the <a href="http://www.apache.org/dev/release-signing.html#faq">Apache Release Signing FAQ</a>
+    for more information on release signing.
+    </p>
+    <p>
+    Example:
+    <pre>
+$ gpg --armor --output commons-foo-1.2-src.tar.gz.asc --detach-sig commons-foo-1.2-src.tar.gz    
+You need a passphrase to unlock the secret key for
+user: "Robert Burrell Donkin (CODE SIGNING KEY) &lt;rdonkin@apache.org&gt;"
+1024-bit DSA key, ID B1313DE2, created 2003-01-15
+    </pre>
+    </p>
+    <p>
+    Signatures for all varieties of release need to be create. The signature files should be 
+    named after the original with <code>.asc</code> suffixed.
+    <pre>
+$ gpg --armor --output commons-foo-1.2-src.tar.gz.asc --detach-sig commons-foo-1.2-src.tar.gz 
+$ gpg --armor --output commons-foo-1.2-src.zip.asc --detach-sig commons-foo-1.2-src.zip
+$ gpg --armor --output commons-foo-1.2.zip.asc --detach-sig commons-foo-1.2.zip
+$ gpg --armor --output commons-foo-1.2.tar.gz.asc --detach-sig commons-foo-1.2.tar.gz
+    </pre>
+    </p>
+    <p>
+    If this is the first release you personally have done for Commons, then your code
+    signing public key must be added to the 
+    <a href='#Check KEYS file'><code>KEYS</code> file for Commons</a>.
+    which is in the root of the Commons distribution directory
+    (/www/apache.org/dist/commons/KEYS on people.apache.org).
+    If this file is not present, it needs to be created. 
+    </p>
+  </subsection>
+
+
+  <subsection name='4 Verify the Releases'>
+    <ul>
+    <li>
+      <strong>Verify signatures</strong><br/>
+      Use another user to verify the signatures. (The user must have your code-signing 
+      public key loaded into their key ring.) Here's an example using GnuPG:
+      <pre>
+% gpg --verify commons-foo-1.2.tar.gz.asc commons-foo-1.2.tar.gz
+gpg: Signature made 03/01/03 19:34:31 GMT using DSA key ID B1313DE2
+gpg: Good signature from "Robert Burrell Donkin (CODE SIGNING KEY) &lt;rdonkin@apache.org&gt;"
+% gpg --verify commons-foo-1.2.zip.asc commons-foo-1.2.zip
+gpg: Signature made 03/01/03 19:34:05 GMT using DSA key ID B1313DE2
+gpg: Good signature from "Robert Burrell Donkin (CODE SIGNING KEY) &lt;rdonkin@apache.org&gt;"
+% gpg --verify commons-foo-1.2-src.zip.asc commons-foo-1.2-src.zip
+gpg: Signature made 03/01/03 19:33:42 GMT using DSA key ID B1313DE2
+gpg: Good signature from "Robert Burrell Donkin (CODE SIGNING KEY) &lt;rdonkin@apache.org&gt;"
+% gpg --verify commons-foo-1.2-src.tar.gz.asc commons-foo-1.2-src.tar.gz
+gpg: Signature made 03/01/03 19:32:56 GMT using DSA key ID B1313DE2
+gpg: Good signature from "Robert Burrell Donkin (CODE SIGNING KEY) &lt;rdonkin@apache.org&gt;"
+      </pre>
+    </li>
+    <li>
+      <strong>Check Sums</strong><br/>.
+      Verify md5 check sums. If you can, use another application to double check the sums. Here
+      verifications are performed using openssl.
+      <pre>
+      % openssl md5 &lt;commons-foo-1.2-src.tar.gz
+      a76169177e7a9b58118bcd993aff4a5e
+      % cat commons-foo-1.2-src.tar.gz.md5
+      a76169177e7a9b58118bcd993aff4a5e
+      
+      % openssl md5 &lt;commons-foo-1.2-src.zip
+      ca0ae8330f666dd1626108346e36f799
+      % cat commons-foo-1.2-src.zip.md5
+      ca0ae8330f666dd1626108346e36f799
+      
+      % openssl md5 &lt;commons-foo-1.2.tar.gz
+      460fa7ad1e9ee2b5c4acab4971402395
+      % cat commons-foo-1.2.tar.gz.md5 
+      460fa7ad1e9ee2b5c4acab4971402395
+      
+      % openssl md5 &lt;commons-foo-1.2.zip 
+      d5f98c73f2450e09cc2b1af9509934f0
+      % cat commons-foo-1.2.zip.md5
+      d5f98c73f2450e09cc2b1af9509934f0
+      </pre>
+    </li>
+  </ul>
+  </subsection>
+
+
+  <subsection name='5 Upload Releases'>
+    <p>
+      Upload the following to your home directory on people.apache.org:
+    <ul>
+        <li>all the release distributions</li>
+        <li>the detached signature files (<code>.asc</code>) for these releases</li>
+        <li>the md5 sums (<code>.md5</code>) for these releases</li>
+        <li>the release notes. (If you're using maven, you may need to create a stripped down plain text
+        version.)</li>
+    </ul>
+    </p>
+    <p>
+    A tip is to tar and gz everything and upload it all together:
+    <pre>
+    % scp release.tar.gz rdonkin@www.apache.org:~/
+    release.tar.gz       100% |*********************************|   841 KB    00:46    
+    % ssh -l rdonkin www.apache.org
+    </pre>
+    </p>
+    <p>
+    Untar in a working directory (named <code>release</code>, say). 
+    Remember to make sure that the group is <em>commons</em>, 
+    that they are world readable and that they are group read-writable.
+    <pre>
+    chgrp commons release/*
+    chmod 664 release/*       # rw-rw-r--
+    </pre>
+    </p>
+  </subsection>
+
+  <subsection name='6 Move Releases Into Distribution Directories'>
+    <p>
+    Change directory to the distribution directory for your component:
+    <pre>
+    cd /www/www.apache.org/dist/commons/foo/
+    </pre>
+    </p>
+    <p>
+    Move source distributions, their detached signatures and md5 sums into position. 
+    All source versions live in the source subdirectory.
+    </p>
+    <pre>
+      mv ~/release/commons-foo-1.2-src* source
+    </pre>
+    <p>
+    Move the binary distributions, their detached signatures and md5 sums into position. 
+    All binary versions live in the <em>binaries</em> subdirectory.
+    </p>
+    <pre>
+    mv ~/release/commons-foo-1.2* binaries
+    </pre>
+    <p>
+    Double check the permissions for binaries and source distributions.
+    </p>
+  </subsection>
+
+  <subsection name='7 Update Release Directory'>
+    <p>
+    <strong>Update README</strong><br/>
+    The contents of the <code>README.html</code> are displayed at the bottom of the html 
+    showing the directory listing. This document should be updated to reflect the new release.
+    If this document is not present, then copy one from an existing release directory
+    and edit that.
+    </p>
+    <p>
+    Update the latest release number. Please also read through and correct any mistakes you find
+    and fix other items (eg. urls) which need updating. If your component is missing a <code>README.html</code> 
+    then add a new one modeled on a copy in another component.
+    </p>
+    <p>
+    Copy the revised <code>README.html</code> into the binary and source directories, replacing any old versions.
+    </p>
+    <p>
+    <a name='Check KEYS file'/>
+    <strong>Check KEYS file</strong><br/>
+    Check the <code>KEYS</code> file located in the main release directory. This should contain all the 
+    public keys which have been used to sign Commons' releases. Make sure that this file exists and 
+    that it contains the public key you've used to sign these releases. (The <code>KEYS</code> file should
+    give instructions about how to do this.)
+    </p>
+    <p>
+    <strong>Update Symbolic Links</strong><br/>
+    Remove symbolic links to current distributions
+    <pre>
+    rm commons-foo-current*
+    </pre>
+    </p>
+    <p>
+    Recreate links to current distribution
+    <pre>
+    &gt; ln -s source/commons-foo-1.2-src.tar.gz commons-foo-current-src.tar.gz 
+    &gt; ln -s source/commons-foo-1.2-src.tar.gz.asc commons-foo-current-src.tar.gz.asc
+    &gt; ln -s source/commons-foo-1.2-src.tar.gz.md5 commons-foo-current-src.tar.gz.md5
+    &gt; ln -s source/commons-foo-1.2-src.zip commons-foo-current-src.zip
+    &gt; ln -s source/commons-foo-1.2-src.zip.asc commons-foo-current-src.zip.asc
+    &gt; ln -s source/commons-foo-1.2-src.zip.md5 commons-foo-current-src.zip.md5
+    &gt; ln -s binaries/commons-foo-1.2.tar.gz commons-foo-current.tar.gz
+    &gt; ln -s binaries/commons-foo-1.2.tar.gz.md5  commons-foo-current.tar.gz.md5
+    &gt; ln -s binaries/commons-foo-1.2.tar.gz.asc commons-foo-current.tar.gz.asc
+    &gt; ln -s binaries/commons-foo-1.2.zip commons-foo-current.zip
+    &gt; ln -s binaries/commons-foo-1.2.zip.md5 commons-foo-current.zip.md5
+    &gt; ln -s binaries/commons-foo-1.2.zip.asc commons-foo-current.zip.asc
+    </pre>	
+    </p>
+    <p>Please test that these links function correctly!</p>
+    <p>
+    <strong>Update RELEASE-NOTES</strong><br/>
+    Replace the current <code>RELEASE-NOTES.txt</code> with the new release notes.
+    <pre>
+    mv ~/release/RELEASE-NOTES.txt .
+    </pre>
+    </p>
+    <p>
+    <strong>Remove Obsolete Releases</strong><br/>
+    If there are releases in the binary or source directory that are not expected to
+    be frequently accessed (eg releases more than 2 years old) then these files should
+    be deleted; this will cause the files to also be deleted from the mirrors and
+    save them some diskspace as well as simplifying things for users. Note that the
+    contents of the /www/www.apache.org/dist directory is regularly copied to
+    /www/archive.apache.org/dist and from there transferred to host archive.apache.org.
+    Deleting files from the standard distribution directories does <i>not</i> delete
+    them from the archive dist directories (this is a copy, not an rsync) so users will
+    still be able to access old files even when they are not available from the mirrors.
+    The automatic transfer of files to the archive directory also means that you do not
+    need to take any special actions to ensure your new files are made available on 
+    archive.apache.org.
+    </p>
+  </subsection>
+
+  <subsection name='8 Deploy jar, project.xml and license.html to Java-Repository'>
+    <p>
+    The ASF Java Respository is the home for distributions in jar format.
+    Your jar file(s) should be placed in 
+    <code>/www/people.apache.org/repo/m1-ibiblio-rsync-repository/commons-foo/jars</code> on
+    people.apache.org. The jars placed here will be rsynched (after some delay)
+    to the public distribution repository on www.apache.org, as well as to the
+    ibiblio repository. If available, your project.xml should be placed in 
+    <code>/www/people.apache.org/repo/m1-ibiblio-rsync-repository/commons-foo/poms</code>
+    as the file <code>commons-foo-1.2.pom</code>. 
+    Ensure the version number matches the one inside the <code>project.xml</code>.
+    </p>
+    <p><strong>N.B.</strong> Remember to sign files placed in the ASF Java
+       Respository.
+    </p>
+    <p>
+    The current html version of the Apache Software License needs to be in 
+    /www/people.apache.org/repo/m1-ibiblio-rsync-repository/commons-foo/licenses as the file
+    license.html. If this file does not exist or reflects an out-of-date version,
+    copy a current version from another component directory. There should also be
+    a symlink named commons-foo.license in this directory. If this link does not
+    exist, create it using
+    <pre>
+      ln -s license.html commons-foo.license 
+    </pre>
+    </p>
+    <p>
+    Maven users can deploy release jars automatically using maven's jar plugin.
+    See the 
+<a href="http://svn.apache.org/repos/asf/commons/proper/commons-build/trunk/samples/project.properties.sample">
+    project.properties.sample</a> file in the commons-build directory for
+    an example showing how to configure the necessary properties to support jar
+    deployment using scp. A how-to showing how to get an apache ssh key set up
+    can be found  
+    <a href="http://www.apache.org/dev/user-ssh.html">
+    here.</a>  Given this setup, 
+    <pre>
+      maven -Dmaven.repo.list=apache.releases -Duser.name=your-apache-id jar:deploy
+    </pre>
+    will deploy the jar to the Apache Maven repository (with your user name
+    as the value of the Built-By attribute in the manifest). Note that the
+    maven jar plugin does not (yet) create or publish signatures, so if you use
+    maven to deploy the jar, you need to manually sign it and copy the signature
+    file separately to /www/people.apache.org/repo/m1-ibiblio-rsync-repository/commons-foo/jars.
+    Make sure that the signature file has correct permissions and group
+    ownership (matching the jar) after you copy it. 
+    </p>
+  </subsection>
+
+  <subsection name='9 Test Main Site Downloads'>
+    <p>
+    You should now be able to get the new release from the main apache web site 
+    (<code>http://www.apache.org/dist/commons/foo/</code>). 
+    </p>
+    <p>
+    Check the main directory:
+    <ol>
+      <li> 
+      Examine the directory listing page. At the bottom should be found the information you
+      entered into the <code>README.html</code>. Please check that this is correct.
+      </li>
+      <li>
+      Check the <code>KEYS</code> file
+      </li>
+      <li>
+      Check the <code>RELEASE-NOTES.txt</code>
+      </li>
+      <li>Download and verify the current distributions</li>
+    </ol>
+    </p>
+    <p>
+    Follow the links to the binaries and source directories. 
+    Check them in a similar manner.
+    </p>
+  </subsection>
+
+  <subsection name="10 Update Component WebSite">
+    <strong>Publish Updated Website</strong>
+    <p>
+    On your own machine, ensure that the project.xml contains a &lt;siteDirectory&gt;
+    tag that points to /www/commons.apache.org/foo, then run:
+    <pre>
+      maven -Dmaven.username=yourapacheid site:deploy
+    </pre>
+    </p>
+    <p>
+    On people.apache.org, verify that the directory has been updated, and that the
+    file and directory permissions are correct (readable by all, not writeable by
+    world).
+    </p>
+    <p>
+    Note that the files are transferred to the real web site only every
+    few hours, so it may be a while before you see your changes appear. However if
+    you set your webbrowser's HTTP proxy to 209.237.227.195 port 80 and access
+    http://commons.apache.org/ you should be able to see the changes immediately.
+    </p>
+    <strong>Perform Manual Fixups (if any)</strong>
+    <p>
+    It is quite nice for a component website to provide not just the latest javadocs and
+    release notes, but also links to this information for previous releases. However Maven
+    doesn't provide any way to do this. The usual solution is therefore for the component
+    to arrange for its generated website to have some navbar links that point to somewhere
+    that doesn't exist (at least not created by Maven), then manually put the missing info
+    at the needed location after "maven site:deploy" has been run. If the component you
+    are deploying has done such tricks, then you need to do the manual fixups now.
+    </p>
+    <p>
+    As an example, the foo component's website might have links for "1.1 release notes"
+    and "1.1 javadoc" that point to "release11/RELEASE-NOTES.txt" and "release11/api";
+    in that case you'll need to create that release11 directory and install the old
+    release notes and javadoc there. 
+    </p>
+    <p>
+    Note that "maven site:deploy" will not delete any extra directories or files that were
+    already there, so if there was a "release10" directory that is no longer referenced
+    from the new website then you should delete that old directory.
+    </p>
+  </subsection>
+
+  <subsection name='11 Update Commons Web Site'>
+    <p>
+    If you are creating a component site for the first time, then you will need to
+    update file commons-build/menus/components-items.ent in subversion and publish
+    the updated commons site.
+    </p>
+    <p>
+    To update the commons site:
+    <ul>
+    <li>check out the entire commons/trunks-proper directory (the build process
+        needs all the other components checked out).</li>
+    <li>cd commons/trunks-proper/commons-build</li>
+    <li>edit downloads/downloads.xml as necessary</li>
+    <li>maven site:generate</li>
+    <li>ant -f build-downloads.xml</li>
+    <li>maven -Dmaven.username=yourapacheid site:deploy</li>
+    <li><strong>check that the cgi scripts in the deployed site on
+        people.apache.org are executable</strong> (if not chmod 775 the cgi
+        scripts)</li>
+    </ul>
+    Note that the website is actually served from another machine, so it may take a
+    few hours until those changes are transferred to the actual webserver host machine.
+    </p>
+  </subsection>
+
+  <subsection name='12 Create Announcements'>
+    <p>
+    Announce the availability of the new release. 
+    You can probably use the news item create earlier as a basis for the announcement body.
+    </p>
+    <p>
+    Please remember to give a brief description of you component. Please also remember to remind people 
+    about verifying the signatures. The subject should be something like <code>[ANNOUNCEMENT] Foo 1.2 Released</code>. 
+    Send this mail from your apache account. Please spell check the document!
+    </p>
+    <p>
+    This should go to (at least) the following mailing lists:
+    <ul>
+    <li>announcements@jakarta.apache.org</li>
+    <li>dev@commons.apache.org</li>
+    <li>user@commons.apache.org</li>
+    </ul>
+    </p>
+  </subsection>
+
+  <subsection name='13 Post Release Update'>
+    <p>
+    That's it! The release is out there - but there is still some tidying up to be done.
+    </p>
+    <ul>
+    <li>
+    <strong>Update Build Version Number</strong>
+    Update build number found in <code>build.xml</code> in the trunk. This should be 
+    updated to a <code>dev</code> release, eg change "1.2" to "1.3-dev"
+    </li>
+    <li>
+    <strong>Update currentVersion</strong>
+    Update currentVersion found in <code>project.xml</code> in the trunk. This should be
+    updated to a <code>SNAPSHOT</code> release, eg change "1.2" to "1.3-SNAPSHOT"
+    </li>
+    </ul>
+  </subsection>
+
+  <subsection name='14 Update JIRA'>
+    <p>
+    Check in JIRA for all bugs which have been marked <code>LATER</code> and reopen them. 
+    If you need some changes made to JIRA (for example, a new version number adding) 
+    and are unable to do so yourself, send an email to the dev list
+    (dev at commons.apache.org).
+    </p>
+    <p>
+    Now is also an ideal time to have a go at fixing some of those bugs you marked as <code>LATER</code>.
+    </p>
+  </subsection>
+
+  <subsection name="15 Miscellaneous">
+    <p>
+    There are some scripts available that help to automate some of these steps.
+    In particular, see the following shell scripts in subversion under
+    committers/tools/releases:
+    <ul>
+    <li>sign_and_hash.sh (creates sigs and md5s)</li>
+    <li>verify_sigs.sh (verifies sigs and checksums)</li>
+    <li>symlinks.sh (creates symlinks)</li>
+    </ul>
+    </p>
+  </subsection>
+
+  <subsection name="16 DOAP file">
+    <p>
+    Update the component's <a href="http://projects.apache.org/guidelines.html">DOAP file</a>
+    with details of the released version:
+    </p>
+    <pre>
+    &lt;release&gt;
+      &lt;Version&gt;
+        &lt;name&gt;x.y.z&lt;/name&gt;
+        &lt;created&gt;yyyy-mm-dd&lt;/created&gt;
+        &lt;revision&gt;x.y.z&lt;/revision&gt;
+      &lt;/Version&gt;
+    &lt;/release&gt;
+    </pre>
+    <p>
+    Release information gets published on the 
+    <a href="http://projects.apache.org/indexes/pmc.html#Apache%20Commons">Apache projects site</a>.
+    </p>
+  </subsection>
+</section>
+
+  
+  
+<section name='Feedback'>
+  <p>
+    Feedback - yes please! 
+  </p>
+  <p>
+    Comments, critiques and error reports -
+    post them any and all to the dev@commons.apache.org. Please prefix with [doc].
+  </p>
+</section>
+</body>
+</document>
