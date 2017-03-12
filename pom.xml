@@ -1,4 +1,4 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"  encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" 
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
@@ -20,8 +20,9 @@
     <inceptionYear>2014</inceptionYear>
 	
 	<modules>
-		<!--module>base-pom</module>
-		<module>closedsource-pom</module>
+		<module>base-pom</module>
+		<module>cmake-pom</module>
+		<!--module>closedsource-pom</module>
 		<module>private-pom</module>
 		<module>product-pom</module>
 		<module>public-pom</module>
@@ -102,7 +103,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-invoker-plugin</artifactId>
-				<version>1.9</version>
+				<version>${maven-invoker-plugin.version}</version>
 				<configuration>
 					<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
 					<localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>

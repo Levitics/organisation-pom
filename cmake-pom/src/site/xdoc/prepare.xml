@@ -1,0 +1,862 @@
+<?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<document>
+
+ <properties>
+  <title>Preparations for a Release</title>
+  <author email="dev@commons.apache.org">Commons Documentation Team</author>
+ </properties>
+
+ <body>
+  <section name='Introduction'>
+	<p>
+	This document contains a mixture of information, advice and examples.
+	It is intended to be a recommendation of best practices.
+	Official guidelines for ASF releases are found elsewhere. 
+	</p>
+    <p>
+    The examples below assume that preparation is being made to release version <em>1.2</em>
+    of component <em>Foo</em>.
+    </p>
+  </section>
+  <section name='Build Environments'>
+    <p>
+    Commons components are expected to use Maven to build the project website. Components
+    may choose to use either Maven or Ant to build the actual jar files to be distributed,
+    although it is recommended that Maven be used for this. Both approaches are covered
+    below.
+    </p>
+    <p>
+    This document assumes that the release is being prepared on a linux/unix system, and
+    that steps are being executed from a command-line. The principles are the same, however,
+    for a release prepared on other operating systems or using graphical tools.
+    </p>
+  </section>
+
+  <section name='Preparation'>
+    <subsection name='Select a Release Manager'>
+      <p>
+      A commons committer (normally one of the development team) should post an email to the
+      development list proposing that a release be made and nominating a release manager.
+      Typically, this should be the proposer. Normal voting procedures apply 
+      (<a href='http://www.apache.org/foundation/glossary.html#LazyConsensus'>lazy consensus</a>).
+      </p>
+      <p>
+      A release plan should also be prepared, in which the tasks remaining to be done before
+      the release are listed. It may be useful to prepare draft release notes before proposing
+      the release, so that others can see what changes are expected for the new release.
+      Preparing the required documents before the release and presenting them for public review
+      (as part of the plan) gives a better chance that any problems can be corrected at an early 
+      stage.
+      </p>
+      <p>
+      Many release managers favour development of the plan on the 
+      <a href='http://wiki.apache.org/commons'>wiki</a>.
+      This format encourages collaboration between developers and reduces the overhead
+      of maintaining the plan.
+      </p>
+      <p>
+      For complex releases, release managers should consider calling a vote on the release plan 
+      (by lazy consensus). This may help to coordinate the execution of the plan and to ensure
+      that all developers are aware of the state of the plan.
+      </p>
+    </subsection>
+
+    <subsection name='Consider a Release Branch'>
+      <p>
+      Consider whether a release branch is needed before preparing for the new release. 
+      During the preparation for a release, the changes made to the code needs to be tightly
+      controlled. The release manager should take particular care in reviewing all changes.
+      If a release branch is not taken then the trunk code will need to be frozen for 
+      critical periods and normal development work suspended for the duration.
+      If a release branch is taken then work will be required to merge any changes back 
+      into the trunk.
+      Whether a release branch is needed or not is a judgement call but the more active
+      the component, the more justified a release branch would be.
+      </p>
+      <p>
+      If a release branch is used then the branch
+      should be taken before the release candidate is cut and voted upon. Whether this is done
+      early in the process or later is a judgement call. Taking the branch early allows development
+      to continue on the trunk. However it means that any updates made as part of the preparations
+      for the release will later need to be merged into the trunk code. In general, commons
+      components are small enough (i.e. development rate is low enough) that the branch can be
+      made later in the process (as each release candidate is generated).
+      </p>
+      <p>
+      If a release branch is to be made early, then the following should be done:
+      <pre>
+        cd to the project's base directory in your subversion working copy.
+        svn update trunk
+        svn cp trunk branches/foo-1.2-work
+        svn commit branches/foo-1.2-work
+      </pre>
+      Note that the "svn update" step is necessary in order to ensure that the directory being
+      copied does not have a mix of files at various revisions; even if the files haven't changed
+      since the last svn update this can cause "svn log -v" on the new directory to report files as
+      having been (R)eplaced. Alternatively, use "svn cp URL1 URL2" which will copy files
+      internally within the repository without using the local working copy: this always ensures
+      a clean copy is made.
+      </p>
+      <p>
+      Including details of the branch strategy in the release plan aids coordination.
+      </p>
+      <p>
+      The description below assumes a release is being prepared on the trunk. The process is nearly
+      identical when preparing from a release branch: only the directory in which the work is
+      performed is different.
+      </p>
+    </subsection>
+    <subsection name='Check Compatibility'>
+    	<p>
+    Consult the <a href='versioning.html'>Commons Versioning Guidelines</a> and check
+    that the current level of compatibility is suitable for the proposed version number.
+    Check the current level of compatibility in the code. Tools like 
+    <a href='http://clirr.sourceforge.net'>Clirr</a> and 
+    <a href='http://www.jdiff.org'>JDiff</a> are very useful. Both support ant and maven.
+    	</p>
+    </subsection>
+    <subsection name='Check Javadocs And Code Style'>
+    	<p>
+    Ensure all new classes and methods have <code>@since</code> tags.
+    Compatibility reports produced in the last section may prove helpful.
+    	</p>
+        <p>
+    Ensure no errors or warnings are reported by the javadoc tool.
+    Check that the javadocs have the correct version number.
+        </p>
+        <p>
+    If the component uses checkstyle or PMD tools, examine the reports and fix all 
+    problems.
+        </p>
+    </subsection>
+    <subsection name='Check Class File Format'>
+        <p>
+    Unless appropriate options are set, code compiled with more modern JVMs 
+    may fail on older JVMs. The minimum target JVM for the project should be
+    documented. Check that compilation produces code that will execute correctly
+    on that JVM. 
+        </p>
+        <p> 
+    If using maven 1, the <code>maven.compile.target</code> property in the 
+    <code>project.properties</code> file should be set correctly.
+    If using ant, the <code>javac</code> task should have the <code>target</code>
+    attribute set correctly.
+        </p>
+        <p>
+    The maven 1 build now adds entries to the jar's manifest to show the values
+    of the <code>maven.compile.source</code> and <code>maven.compile.target</code>
+    properties used to generate the jar. For more details on this see sections
+    <a href="#checkjarmanifest">Check The Jar Manifest</a> and 
+    <a href="#classfileformat">Class File Format</a> for more details.
+        </p>
+        <p>
+    For Maven 2 builds, the Commons parent POM specifies default values for 
+    <code>maven.compile.source</code> and <code>maven.compile.target</code>. These
+    values should be overridden in the project's POM if they're not appropriate for it.
+        </p>
+    </subsection>
+    <subsection name='Check Documentation'>
+        <p>
+    Check that the documentation has been generated correctly. Check that all links are working.
+    Those using maven can use the 
+    <a href='http://maven.apache.org/maven-1.x/plugins/linkcheck/'>LinkCheck plugin</a> report
+    to automate this check.
+        </p>
+    </subsection>
+    <subsection name='(Maven Only) Consider Naming Of Source Distribution'>
+        <p>
+    By default, maven uses the same directory name for both binary and source distributions
+    (commons-foo-1.2). Some find it more convenient to have the source distribution unpack
+    to commons-foo-1.2-src. This can be done easily by adding the following line to the
+    component's project.properties file:
+        </p>
+        <p> 
+    <pre>
+    maven.dist.src.assembly.dir=${maven.dist.assembly.dir}/src/${maven.final.name}-src  
+    </pre>
+        </p>
+        <p>
+    Maven 2 builds use assembly descriptors, which by default live in <code>src/assembly</code>.
+    By convention, <code>src.xml</code> is for source distributions and <code>bin.xml</code>
+    is for binary distributions. You can specify the <code>baseDirectory</code> property
+    in <code>src.xml</code> to include -src:
+    <pre>
+<![CDATA[
+<assembly>
+  ...
+  <baseDirectory>${project.artifactId}-${project.version}-src</baseDirectory>
+  ...
+</assembly>
+]]>
+    </pre>
+        </p>
+    </subsection>
+  </section>
+
+  <section name="Creating a Release Candidate">
+    <subsection name='Check The Jar Manifest'>
+        <a name="checkjarmanifest"></a>
+        <p><strong>Maven Build</strong></p>
+        <p>
+        Maven will create an appropriate MANIFEST.MF file automatically and, unless specifically
+        configured, any MANIFEST.MF file present within the project will simply be ignored.
+        </p>
+        <p>
+        The maven build has been modified to include two <strong><i>non standard</i></strong> attributes
+        in the jar's manifest to indicate the <code>maven.compile.source</code> and 
+        <code>maven.compile.target</code> properties used to create the jar. This serves two purposes:
+          <ul>
+             <li>To provide comfort to users regarding JVM compatibility.</li>
+             <li>Enable releases to be checked more easily for JVM compatibility.</li>
+          </ul>
+        </p>
+        <p>
+        The entries created in the manifest will look something like the following:
+        <pre>
+      X-Compile-Source-JDK: 1.3
+      X-Compile-Target-JDK: 1.3
+        </pre>
+        </p>
+        <p>
+        These entries are created by specifying appropriate entries in the <code>project.properties</code>
+        file:
+        <pre>
+      maven.jar.manifest.attributes.list=X-Compile-Source-JDK,X-Compile-Target-JDK
+      maven.jar.manifest.attribute.X-Compile-Source-JDK=${maven.compile.source}
+      maven.jar.manifest.attribute.X-Compile-Target-JDK=${maven.compile.target}
+        </pre>
+        </p>
+        <p>
+        Maven 2 builds have these properties automatically inserted if the POM inherits
+        from the Commons parent POM (org.apache.commons:commons-parent:pom:4). All Commons
+        projects using Maven 2 are vigorously encouraged to use the parent POM.
+        </p>
+        <p><strong>Ant Build</strong></p>
+        <p>
+        If you are using Ant to build the release, then the MANIFEST.MF file at foo/src/conf/MANIFEST.MF
+        should contain appropriate <code>@varname@</code> strings which are replaced dynamically 
+        by an Ant copy task
+        using values defined in the ant build.xml file. If the component's MANIFEST.MF file instead 
+        has hard-wires values then it should be fixed to use appropriate ant variables. Useful reference
+        documents are:
+        </p>
+        <ul>
+          <li>
+            <a href='http://java.sun.com/j2se/1.5.0/docs/guide/jar/jar.html'>Sun Manifest Format</a>
+          </li>
+          <li>
+            <a href='http://java.sun.com/j2se/1.5.0/docs/guide/versioning/spec/versioning2.html'>
+              Sun Package Versioning Standards
+            </a>
+          </li>
+        </ul>
+        <p>
+        If your component does not currently include an manifest when building it's jars, one should be
+        added.
+        Here is an example of a typical commons manifest:
+        <pre>
+	Extension-Name: org.apache.commons.foo
+	Specification-Title: Apache Commons Foo
+	Specification-Vendor: The Apache Software Foundation
+	Specification-Version: 1.2
+	Implementation-Vendor-Id: org.apache
+	Implementation-Title: org.apache.commons.foo
+	Implementation-Vendor: The Apache Software Foundation
+	Implementation-Version: 1.2
+        </pre>
+        </p>
+    </subsection>
+
+    <subsection name='Resolve Bugs'>
+        <p>
+        Resolve all bugs on that version! They can be resolved by:
+        <ul>
+          <li>fixing</li>
+          <li>marking them as <code>INVALID</code> or <code>WONTFIX</code></li>
+          <li>changing their fix version to another unreleased version</li>
+        </ul>
+        </p>
+    </subsection>
+
+    <subsection name='Prepare Release Notes'>
+        <p>
+	Each component should have a file RELEASE-NOTES.txt in the base directory of the component.
+	This file should be included within the distributions available for download.
+	The release notes should contain a description of all the changes since the previous release.
+	Any compatibility issues with the last release (whether binary or semantic)
+	should be highlighted. 
+	If there are no compatibilty issues, this too should be mentioned.
+	An introduction to the release may also be given, describing the component
+	and the release in general terms. 
+		</p>
+    <p>
+The release notes should contain the minimum target Java version for the component.
+    </p>
+		<p>
+	The release notes should be a plain text file. Take care to ensure
+	that the format allows easy reading on a wide variety of platforms.
+	Long lines may need to be broken manually to allow them to be easily
+	read easily without word wrap.		
+		</p>
+	<p>
+        Different components have their own ways of creating the change log. 
+        Here's the most common way:
+        </p>
+        <p>
+        Get a list of all the commits since the last release by following these steps.
+        <br/>
+        Assuming that, as part of the last release, a directory {project-base}/tags/foo-1.1
+        had been created:
+        <pre>
+      cd {project-base}/tags
+
+      svn log --stop-on-copy foo-1.1
+      # The last revision NNNN reported in the log output is the revision that was
+      # copied to create the tag. If this is a true tag directory, then of course
+      # there will only be one revision listed by the log command..
+
+      cd ..
+      svn log -v -rNNNN:HEAD trunk > commits-since-last-release.txt
+        </pre>
+	</p>
+	<p>
+        This will result in a file that contains info on each commit that affected at
+        least one file within the trunk directory since the last release. Note that if
+        a commit affected a group of files of which some were outside the trunk directory,
+        then they will be included with the associated commit message but can be ignored.
+        </p>
+	<p>
+	Using "svn diff" instead of "svn log -v" will result instead in a file that shows the
+	actual diffs for each file instead of the commit messages. This may be more convenient
+	when the commit messages are not sufficiently detailed to be able to build the release
+	notes directly from them.
+	</p>
+        <p>
+        Inspect the list of changes and enter relevant information into the release notes;
+	this may require inspecting the actual changes using "svn diff". 
+	Enhancements and new features need to be collated by topic.
+        Bugs fixed should be listed separately together with a short summary of the bug.
+        </p>
+        <p>
+        Please remember to spell check the release notes. Please break lines at 80 characters.
+        </p>
+	<p>
+	<b>IMPORTANT!</b> At the current time, selecting by date in subversion within the
+	ASF repository isn't reliable. The reason is that when converting a date to a revision
+	number, subversion assumes that revision N has an earlier date than revision N+M, and
+	that it can therefore perform a binary search on revision numbers to locate one with
+	the required date. However CVS imports of data that retain the original date
+	information from CVS break this assumption. And unfortunately because revisions
+	are repository-wide information, this affects date-based searches
+	even in directories unrelated to the ones that CVS stuff was imported into.
+	So while dates are reported correctly in "svn log" output, only revision numbers should
+	be used with the -r option. See issue #752 in the subversion issue tracker at tigris.org.
+	</p>
+	<p>
+	Those using Maven 1 should check that the distribution build adds the release notes
+	to the binary distributions. It may be necessary to add some scripting to the <code>maven.xml</code>.
+	For example:
+	</p>
+	<pre>
+<![CDATA[
+  <preGoal name="dist:build-bin">
+    <copy todir="${maven.dist.bin.assembly.dir}">
+      <fileset file='${basedir}/RELEASE-NOTES.txt'/>
+      ...
+    </copy>
+  </preGoal>
+  <preGoal name="dist:build-src">
+    <copy todir="${maven.dist.src.assembly.dir}">
+      <fileset file='${basedir}/RELEASE-NOTES.txt'/>
+      ...
+    </copy>
+  </preGoal>
+]]>
+	</pre>
+        <p>
+        Maven 2 users should make sure to configure this in the assembly descriptors in
+        src/assembly as described above.
+        </p>
+    </subsection>
+
+    <subsection name='Test Against Listed Dependencies'>    
+	<p>
+	If you are using Maven to execute the unit tests associated with the component then
+	there is nothing to do here; Maven will automatically perform the tests using the
+	library versions specified in the project.xml file.
+	</p>
+    <p>
+    If you are using Ant to execute unit tests, then ensure the Ant build.xml file
+	references the same library versions as are listed as dependencies in the project.xml
+	file then execute the unit tests.
+	</p>
+    </subsection>
+
+    <subsection name='Ensure a good build.xml'>
+        <p>
+        If using Maven, and a hand-built Ant build.xml file does not exist in the project, then
+	ensure that 'maven ant' (for Maven 1) or 'mvn ant:ant' (for Maven 2) has been run so a usable build.xml file exists.
+        </p>
+    </subsection>
+
+    <subsection name='Check the Apache License'>
+        <p>
+        Check the <a href="http://www.apache.org/licenses/">Apache Licenses</a> page for current information.
+        Check that each distribution contains a copy of the license.
+        Check that the jar contains a copy of the license in the META-INF directory.
+        </p>
+        <p>
+        Check that the years in the copyright statement in the license in each source file are correct. 
+        </p>
+        <p>
+        Developer documentation on how to apply the Apache License 
+        can be found in <a href="http://www.apache.org/dev/apply-license.html">Applying the Apache License, Version 2.0</a>
+        </p>
+        <p>
+        Some of the important items from the aforementioned documents:
+        </p>
+        <p>
+        <b>Do I have to have a copy of the license in each source file?</b>
+        </p>
+        <p>
+        Only one full copy of the license is needed per distribution.  Each source
+        file only needs to contain the boilerplate notice at:
+        </p>
+        <p>
+        <code><a href="http://www.apache.org/licenses/LICENSE-2.0.html#apply">http://www.apache.org/licenses/LICENSE-2.0.html#apply</a></code>
+        </p>
+        <p>
+        <b>In my current source files I have attribution notices for other works.
+        Do I put this in each source file now?</b>
+        </p>
+        <p>
+        No. The new license allows for a NOTICE file that contains such attribution
+        notices (including the Apache attribution notice).  See 
+        </p>
+        <p>
+        <code><a href="http://www.apache.org/licenses/example-NOTICE.txt">http://www.apache.org/licenses/example-NOTICE.txt</a></code>
+        </p>
+        <p>
+        for an example that provides all of the notices applicable to the
+        httpd-2.0 distribution.
+        </p>
+    </subsection>
+    
+    <subsection name='Check NOTICE.txt'>
+        <p>
+      	The component should contain a NOTICE.txt (next to the LICENSE.txt).
+      	If this is not present, it must be created.
+      	The basic content (excepting external attributes notes) should be:
+        </p>
+        <pre>
+    Apache Commons {Foo}
+    Copyright {earliest}-{latest} The Apache Software Foundation
+
+	This product includes software developed by
+	The Apache Software Foundation (http://www.apache.org/).
+        </pre>
+        <p>
+        The NOTICE.txt must be distributed along with the LICENSE.txt.
+        Check that the distribution build correct adds this file
+        to the distributions.
+        Those using maven may need to add some scripting to the maven.xml.
+        For example:
+        </p>
+        <pre>
+<![CDATA[
+  <preGoal name="dist:build-bin">
+    <copy todir="${maven.dist.bin.assembly.dir}">
+      ...
+      <fileset file='${basedir}/NOTICE.txt'/>
+    </copy>
+  </preGoal>
+  <preGoal name="dist:build-src">
+    <copy todir="${maven.dist.src.assembly.dir}">
+      ...
+      <fileset file='${basedir}/NOTICE.txt'/>
+    </copy>
+  </preGoal>
+]]>
+        </pre>
+        <p>
+        Check that the jar contains a copy of the NOTICE.txt in the META-INF directory.
+        Those using maven may need to add NOTICE.txt to the build resources section
+        of the project.xml. For example:
+        </p>
+        <pre>
+<![CDATA[
+  <resources>
+    <resource>
+      <directory>${basedir}</directory>
+      <targetPath>META-INF</targetPath>
+      <includes>
+        <include>NOTICE.txt</include>
+      </includes>
+    </resource>
+    ...
+  </resources>
+]]>
+		</pre>
+        <p>
+        Maven 2 builds have this automatically taken care of by the Commons parent POM.
+        </p>
+    </subsection>
+    <subsection name='Create the Release Candidate'>
+        <p>
+        Once all the preparations agreed in the release plan has been completed, create a Release Candidate. 
+        Before taking the tag from which the release candidate will be taken, run the distribution build
+        and double check that everything is still fine.
+        </p>
+        <p>
+        Modify the build version number to indicate that this build is a release candidate. For example, 
+        <code>commons-foo-1.2RC1</code>. Clean build, run the unit tests and check that the javadocs 
+        have the correct version number.
+        </p>
+        <p>
+        Now create the tag for the release candidate. For example (cutting the candidate from the trunk):
+		</p>
+	<pre>
+	  svn update trunk
+	  svn cp trunk tags/foo-1.2-rc1
+	  svn commit tags/foo-1.2-rc1
+	</pre>
+        <p>
+        Note that the "svn update" step is necessary in order to ensure that the directory being
+        copied does not have a mix of files at various revisions; even if the files haven't changed
+        since the last svn update this can cause "svn log -v" on the new directory to report files as
+        having been (R)eplaced. Alternatively, use "svn cp URL1 URL2" which will copy files
+        internally within the repository without using the local working copy; this always ensures
+        a clean copy is made.
+	</p>
+	<p>
+	Build distributions from that tag (as <a href='release.html'>per full release</a>). 
+	Post the release candidate into the public folder <em>~/public_html</em> in your home directory 
+        on <code>people.apache.org</code>. Note that the release candidate is expected to have a name
+	that includes RC so that there is no confusion later between release candidate distributions
+	and the real distribution that is eventually released.
+        </p>
+    </subsection>
+
+    <subsection name='Create the Release Candidate Website'>
+        <p>
+	As well as putting up the user distribution in your home directory on people.apache.org for
+	others to download and verify, the new website should also be published there.
+	</p>
+	<p>
+	For Maven 1 builds, temporarily edit the project.xml file tag &lt;siteDirectory&gt; to point to something like:
+	<pre>
+	  &lt;siteDirectory&gt;public_html/foo-1.2rc1/site&lt;/siteDirectory&gt;
+	</pre>
+	then run
+	<pre>
+	  maven site:generate
+	  maven -Dmaven.username=yourapacheid site:deploy
+	</pre>
+	</p>
+        <p>
+        Maven 2 builds should temporarily add a site location to the &lt;distributionManagement&gt;:
+        <pre>
+<![CDATA[
+  <distributionManagement>
+    <id>stagingSite</id>
+    <url>scp://people.apache.org/home/<apacheuser>/public_html/foo-1.2rc1/site</url>
+  </distributionManagement>
+]]>
+        </pre>
+        and then run
+        <pre>
+          mvn site:stage-deploy
+        </pre>
+        To save time entering your username and password, you can edit your
+        <code>~/.m2/settings.xml</code> to specify them:
+        <pre>
+<![CDATA[
+  <settings>
+    <servers>
+      <server>
+        <id>stagingSite</id>
+        <username>...</username>
+        <password>...</password>
+      </server>
+      <server>
+    </servers>
+  </settings>
+]]>
+        </pre>
+        </p>
+	<p>
+	The reports generated by maven (Clover, jCoverage, etc) are very useful things to inspect in this
+	website.
+	</p>
+	<p>
+	Note that when verifying this candidate site you need to be careful of absolute
+	URLs; following these will lead to the currently published site, not to the 
+	equivalent page on the new site being evaluated.
+	</p>
+    </subsection>
+  </section>
+
+  <section name='Voting On Release'>
+    <subsection name='[VOTE] Release Foo 1.2'>
+        <p>
+        Once the release candidate has been created and uploaded, now it's time to propose the release VOTE.
+        </p>
+        <p>
+        Post a <code>[VOTE] Release Foo 1.2</code> email to <strong>dev@commons.apache.org</strong>.
+        This should contain a link to the release candidate.
+        </p>
+        <p>
+        Votes from members of the Commons PMC are binding, however votes from other committers, users and 
+        contributors are welcomed.
+        If the <code>[VOTE]</code> is successful then continue. It is considered good practice to allow
+        enough time for people to express their opinions.
+        </p>
+	<p>
+	If the vote fails, then fix the problem, update the version number (RC2, RC3, ...) and create a
+	new release candidate (including creating another tag; tags are cheap!). Then call another vote.
+	Creating a perfect release isn't easy, and it is quite common for the first few release candidates
+	to fail, particularly on simple issues like missing license files.
+	</p>
+        <p>
+        Once a vote is successful, post a <code>[RESULT] Release Foo 1.2</code> email to 
+        <strong>dev@commons.apache.org</strong> as a reply to the original posting.
+        This email should contain a summary of the voters/votes that were cast, eg
+	  <pre>
+	    The following people voted on release Foo 1.2:
+        Bob +1
+        Sue +1
+        Sam +0
+        Sandy +1 (non-binding)
+	  </pre>
+        </p>
+        <p>
+        Note that binding the VOTEs recorded need to clearly deliminated in the RESULT.
+        This may be done by either stating only the binding votes (and indicating that to be the case)
+        or by adding <code>(non-binding)</code> to those which are not.
+        It is best practice to indicate how each person. 
+        This allows any mistakes to be caught and corrected early.
+        If you do vote, please check the results to ensure that your vote has been correctly tallied.
+        </p>
+    </subsection>
+
+    <subsection name='Final Preparations'>
+        <p>
+    Update the version number in the project.xml (and possibly build.xml) so that it reflects
+	the release (rather than the release candidate). Clean build and test. Double check that
+	the version number is correct by examining the documentation.
+        </p>
+        <p>
+    Do <code>svn status</code> to check that all files have been committed.
+    Finally do <code>svn update</code> to check for any new commits.
+        </p>
+        <p>
+        Tag the release now:
+ 	  <pre>
+	  svn cp trunk tags/foo-1.2
+	  </pre>
+        </p>
+        <p>
+        You're now ready to <a href='release.html'>cut the release</a>. 
+        </p>
+        <p>
+        Remember to update the main website when the candidate has been cut.
+        </p>
+    </subsection>
+  </section>
+
+  <section name='Things To Look For When Inspecting A Release Candidate'>
+    <p>
+    There are a number of common things that releases fail on. 
+    </p>
+
+    <subsection name="API Changes">
+    <p>
+      Accidental non-compatible API changes in a minor release. The jdiff report
+      generated by Maven is very useful in spotting these.
+    </p>
+    </subsection>
+
+    <subsection name="Javadoc">
+    <ul>
+    <li>Ensure that the javadoc tool reports no warnings or errors.</li>
+    <li>Ensure that all new classes and methods have appropriate @since javadoc tags.</li>
+    </ul>
+    </subsection>
+
+    <subsection name="project.xml (aka POM)">
+    <p>
+    	project.xml, used by Maven to generate that site, has some data which may have become stale.
+    	Make sure it isn't before releasing.  Look at the dependencies report, todo report,
+    	and other reports.
+    </p>
+    <ul>
+    <li>Ensure dependencies are correct</li>
+    <li>Ensure completed tasks are removed from todo list</li>
+    </ul>
+    </subsection>
+
+    <subsection name="Code Style">
+    <p>
+    Many projects enforce coding styles using the CheckStyle or PMD tools. If your
+    project does this, don't forget to check the output and fix any problems.
+    </p>
+    </subsection>
+
+    <subsection name="Class File Format">
+    <a name="classfileformat"></a>
+    <p>
+      Building on a more recent JVM than the code will run on. Java class file
+      format has changed a number of times over the years, and code compiled with
+      a modern JVM may fail to load in an older JVM with the error message
+      "invalid class file format" unless the code is compiled with appropriate
+      options set. If you are using Maven, then ensure that project.properties
+      has maven.compile.target set to the minimum JVM version your binary is
+      intented to support. If you are using Ant, then ensure that the javac task
+      has xml attribute "target" is set to the appropriate JVM version.
+    </p>
+    <p><strong>Maven Build</strong></p>
+    <p>
+    The maven build has been modified to include two <strong><i>non standard</i></strong> attributes
+    in the jar's manifest to indicate the <code>maven.compile.source</code> and 
+    <code>maven.compile.target</code> properties used to create the jar. This serves two purposes:
+      <ul>
+         <li>To provide comfort to users regarding JVM compatibility.</li>
+         <li>Enable releases to be checked more easily for JVM compatibility.</li>
+      </ul>
+    </p>
+    <p>The entries created in the manifest will look something like the following:
+    <pre>
+      X-Compile-Source-JDK: 1.3
+      X-Compile-Target-JDK: 1.3
+    </pre>
+    These values should be checked to ensure that the release has been built for the appropriate JVM.
+    If they are not present or no values are specified then the <code>Build-Jdk</code> entry should
+    be checked to ensure the release has been built with the appropriate JDK.
+    </p>
+    </subsection>
+
+    <subsection name="Licensing">
+    <p>
+    The NOTICE.txt file must be included in both the distribution tars/zips and the
+    included jars.
+    </p>
+    <p>
+    Maven 2 builds default to including this, so no further effort is required
+    for those projects. To make sure that this file is included in maven 1-generated <i>jars</i>,
+    include the following in the build section of your project.xml (or just add the
+    resource defined below to the build resources you already have).
+    </p>
+    <pre>
+<![CDATA[
+<resources>
+  <resource>
+    <directory>${basedir}</directory>
+      <includes>
+        <include>NOTICE.txt</include>
+      </includes>
+      <targetPath>META-INF</targetPath>
+  </resource>
+</resources>
+]]>
+    </pre>
+    <p>
+    To make sure that this file is included in the top-level directory of source and binary
+    distribution files (zips and tars), define preGoals for maven's dist goal that copy
+    NOTICE.txt to the source and binary assembly directories that it uses to package the
+    release. To do this, add the snippet below to maven.xml.
+    </p>
+    <pre>
+<![CDATA[
+<preGoal name="dist:build-bin">  
+  <copy todir="${maven.dist.bin.assembly.dir}">
+    <fileset file='${basedir}/NOTICE.txt'/>
+  </copy>
+</preGoal>
+<preGoal name="dist:build-src">
+  <copy todir="${maven.dist.src.assembly.dir}">
+    <fileset file='${basedir}/NOTICE.txt'/>
+  </copy>
+</preGoal>
+]]>
+    </pre>
+    <p>
+    If you use Maven 2, you should also build source and javadocs jars according to Maven 2
+    standards. You can use the following antrun-plugin configuration to accomplish this:
+    <pre>
+<![CDATA[
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <copy todir="${project.build.directory}/site/api-release">
+                  <fileset dir="${project.build.directory}/site/apidocs"/>
+                </copy>
+                <zip destfile="${project.build.directory}/${artifactId}-${version}-javadoc.jar.new">
+                  <zipfileset src="${project.build.directory}/${artifactId}-${version}-javadoc.jar"/>
+                  <zipfileset dir="." prefix="META-INF">
+                    <include name="LICENSE.txt"/>
+                    <include name="NOTICE.txt"/>
+                  </zipfileset>
+                </zip>
+                <move file="${project.build.directory}/${artifactId}-${version}-javadoc.jar.new"
+                      tofile="${project.build.directory}/${artifactId}-${version}-javadoc.jar"/>
+                <zip destfile="${project.build.directory}/${artifactId}-${version}-sources.jar.new">
+                  <zipfileset src="${project.build.directory}/${artifactId}-${version}-sources.jar"/>
+                  <zipfileset dir="." prefix="META-INF">
+                    <include name="LICENSE.txt"/>
+                    <include name="NOTICE.txt"/>
+                  </zipfileset>
+                </zip>
+                <move file="${project.build.directory}/${artifactId}-${version}-sources.jar.new"
+                      tofile="${project.build.directory}/${artifactId}-${version}-sources.jar"/>
+              </tasks>
+	    </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>  
+  </build>
+]]>
+    </pre>
+    It is a good idea to bind this to a particular profile, such as "release", so that it
+    doesn't run in the default lifecycle and thus in every build.
+    </p>
+    </subsection>
+  </section>
+
+  <section name='Feedback'>
+        <p>
+        Feedback - yes please! 
+        </p>
+        <p>
+        Comments, critiques and error reports -
+        post them any and all to the dev mailing list at commons.apache.org. Please prefix with [doc].
+        </p>
+  </section>
+ </body>
+</document>

@@ -1,4 +1,4 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"  encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" 
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
@@ -290,14 +290,34 @@
 	</dependencyManagement>
 
 	<properties>
+		<global.encoding>UTF-8</global.encoding>
+		<project.build.sourceEncoding>${global.encoding}</project.build.sourceEncoding>
+		<project.build.outputEncoding>${global.encoding}</project.build.outputEncoding>
+		<project.reporting.outputEncoding>${global.encoding}</project.reporting.outputEncoding> 
 
+		<hostname/>
+		<nproc>${env.NUMBER_OF_PROCESSORS}</nproc>
+		<os>${env.OS}</os>
+        <computer>${env.COMPUTERNAME}</computer>
+        <arch>${env.PROCESSOR_ARCHITECTURE}</arch>
+        <aol>${env.PROCESSOR_ARCHITECTURE}.${env.OS}.gcc</aol>
+        <sys.os.arch>${os.arch}</sys.os.arch>
+        <sys.os.name>${os.name}</sys.os.name>
+        <sys.os.version>${os.version}</sys.os.version>
+        <sys.user.name>${user.name}</sys.user.name>
+        <sys.java.vendor>${java.vendor}</sys.java.vendor>
+        <sys.java.version>${java.version}</sys.java.version>
+        <sys.user.timezone>${user.timezone}</sys.user.timezone>
 		<!--
         ISO 8601, see http://en.wikipedia.org/wiki/ISO_8601. This
         property is defined in order to give us an ability to use ${maven.build.timestamp}
         later in the file
         -->
 		<maven.build.timestamp.format>yyyy-MM-dd hh:mm:ss.SSSZ</maven.build.timestamp.format>
-
+        <currentYear>2017</currentYear> <!-- manual setting -->
+        <maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
+        <currentYearDynamic>${maven.build.timestamp}</currentYearDynamic>
+        
 		<scm.host>bitbucket.org</scm.host>
 		<scm.con>scm:git:ssh://git@${scm.host}/${corporateName}/${project.artifactId}.git</scm.con>
 		<dev.con>scm:git:ssh://git@${scm.host}/${corporateName}/${project.artifactId}.git</dev.con>
@@ -317,14 +337,11 @@
 
 		<projectReleaseKey>8E5GYEGGh68Fo3DJ0UXy7i7Y4Rw2VB8U</projectReleaseKey> <!-- http://randomkeygen.com/ CodeIgniter Encryption Keys-->
 
-		<global.encoding>UTF-8</global.encoding>
-		<project.build.sourceEncoding>${global.encoding}</project.build.sourceEncoding>
-		<project.build.outputEncoding>${global.encoding}</project.build.outputEncoding>
-		<project.reporting.outputEncoding>${global.encoding}</project.reporting.outputEncoding> 
 
 		<organization.name>LEVITICS Labs</organization.name>
 		<corporate>levitics.com</corporate>
-		<organization.url>http://${corporate}</organization.url>
+		<corporate.short.url>levitics.com</corporate.short.url>
+		<organization.url>http://${corporate.short.url}</organization.url>
 		<corporateName>doevelopper</corporateName>
 
 		<jdkLevel>1.6</jdkLevel>
@@ -335,8 +352,10 @@
 		<maven.compiler.source>${maven.compiler.version}</maven.compiler.source>
 		<maven.compiler.target>${maven.compiler.version}</maven.compiler.target>
 
+        <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
+
 		<clover.Version>3.1.5</clover.Version>
-		<requireJavaVersion>1.6.0</requireJavaVersion>
+		<requireJavaVersion>1.8.0</requireJavaVersion>
 		<maven.javadoc.plugin.version>2.9.1</maven.javadoc.plugin.version>
 
 		<!-- ban-milestones-and-release-candidates - may be overridden if absolutely necessary for a release -->
@@ -378,7 +397,7 @@
 		<commons-collections.version>3.2.1</commons-collections.version>
 		<guice.version>3.0</guice.version>
 
-		<joda-time.version>2.3</joda-time.version>
+		<joda-time.version>2.9.7</joda-time.version>
 		<slf4j.version>1.6.2</slf4j.version>
 		<velocity.version>1.7</velocity.version>
 		<xerces.version>2.8.1</xerces.version>
@@ -387,34 +406,53 @@
 		<!-- Core plugin dependencies versions. -->
 		<!-- ================================================================================ -->
 		<maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
-		<maven-antrun-plugin.version>1.7</maven-antrun-plugin.version>
-		<maven-assembly-plugin.version>2.4</maven-assembly-plugin.version>
-		<maven-clean-plugin.version>2.5</maven-clean-plugin.version>
-		<maven-dependency-plugin.version>2.8</maven-dependency-plugin.version>
-		<maven-failsafe-plugin.version>2.16</maven-failsafe-plugin.version>
-		<maven-git-commit-id-plugin.version>2.1.9</maven-git-commit-id-plugin.version>
-		<maven-install-plugin.version>2.3.1</maven-install-plugin.version>
-		<maven-release-plugin.version>2.5</maven-release-plugin.version>
+		<maven-antrun-plugin.version>1.8</maven-antrun-plugin.version>
+		<maven-assembly-plugin.version>3.0.0</maven-assembly-plugin.version>
+        <maven-clean-plugin.version>3.0.0</maven-clean-plugin.version>
+		<maven-dependency-plugin.version>3.0.0</maven-dependency-plugin.version>
+		<maven-failsafe-plugin.version>2.19.1</maven-failsafe-plugin.version>
+		<maven-git-commit-id-plugin.version>2.1.15</maven-git-commit-id-plugin.version>
+        <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
+        <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
 		<maven-remote-resources-plugin.version>1.5</maven-remote-resources-plugin.version>
-		<maven-resources-plugin.version>2.4.3</maven-resources-plugin.version>
-		<maven-source-plugin.version>2.1.2</maven-source-plugin.version>
-		<maven-github-site-maven-plugin.version>0.10</maven-github-site-maven-plugin.version>
-
+        <maven-resources-plugin.version>3.0.2</maven-resources-plugin.version>
+		<maven-source-plugin.version>3.0.1</maven-source-plugin.version>
+        <maven-verifier-plugin.version>1.1</maven-verifier-plugin.version>
+		<maven-github-site-maven-plugin.version>0.12</maven-github-site-maven-plugin.version>
+        <versions-maven-plugin.version>2.3</versions-maven-plugin.version>
+        <license-maven-plugin.version>3.0</license-maven-plugin.version>
+        <maven-notice-plugin.version>1.0.4</maven-notice-plugin.version>
 		<!-- ================================================================================ -->
 		<!-- Packaging plugins -->
 		<!-- ================================================================================ -->
-		<maven-jar-plugin.version>2.4</maven-jar-plugin.version>
-		<maven-war-plugin.version>2.4</maven-war-plugin.version>
+		<maven-jar-plugin.version>3.0.2</maven-jar-plugin.version>
+		<maven-war-plugin.version>3.0.0</maven-war-plugin.version>
 
 		<!-- ================================================================================ -->
 		<!-- Reporting plugins (only used subset) -->
 		<!-- ================================================================================ -->
-		<maven-changes-plugin.version>2.9</maven-changes-plugin.version>
+		<maven-changes-plugin.version>2.12.1</maven-changes-plugin.version>
 		<maven-changelog-plugin.version>2.3</maven-changelog-plugin.version>
-		<maven-project-info-reports-plugin.version>2.7</maven-project-info-reports-plugin.version>
+		<maven-project-info-reports-plugin.version>2.9</maven-project-info-reports-plugin.version>
+		<maven-surefire-plugin.version>2.17</maven-surefire-plugin.version>
+        <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
+		<maven-invoker-plugin.version>2.0.0</maven-invoker-plugin.version>
+        <extra-enforcer-rules.version>1.0-beta-6</extra-enforcer-rules.version>
+		<maven-surefire-report-plugin.version>2.17</maven-surefire-report-plugin.version>
+		<artifactory-maven-plugin.version>2.6.1</artifactory-maven-plugin.version>
+		<appassembler-maven-plugin.version>1.8.1</appassembler-maven-plugin.version>
+        <exec-maven-plugin.version>1.5.0</exec-maven-plugin.version>
+		<maven-compiler-plugin.version>3.6.1</maven-compiler-plugin.version>
+		<maven-site-plugin.version>3.6</maven-site-plugin.version>
+        <maven-checkstyle-plugin.version>2.17</maven-checkstyle-plugin.version>
+        <buildnumber-maven-plugin.version>1.4</buildnumber-maven-plugin.version>
+        <build-helper-maven-plugin.version>3.0.0</build-helper-maven-plugin.version>
+        <puppycrawl.tools.version>5.4</puppycrawl.tools.version>
+		<wagon-ssh.version>2.12</wagon-ssh.version>		
+        <!-- Check versin for followings -->
+		<taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
 		<maven-reflow-skin.version>1.1.1</maven-reflow-skin.version>
 		<maven-cobertura-plugin.version>2.6</maven-cobertura-plugin.version>
-		<maven-checkstyle-plugin.version>2.11</maven-checkstyle-plugin.version>
 		<maven-clirr-plugin.version>2.6.1</maven-clirr-plugin.version>
 		<maven-clover2-plugin.version>3.2.2</maven-clover2-plugin.version>
 		<maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
@@ -423,53 +461,180 @@
 		<maven-jxr-plugin.version>2.3</maven-jxr-plugin.version>
 		<maven-pmd-plugin.version>3.2</maven-pmd-plugin.version>
 		<maven-rat-plugin.version>0.8</maven-rat-plugin.version>
-		<maven-surefire-report-plugin.version>2.16</maven-surefire-report-plugin.version>
-		<taglist-maven-plugin.version>2.4</taglist-maven-plugin.version>
+        <groovy-maven-plugin.version>2.0</groovy-maven-plugin.version>
+        <groovy-al.version>2.4.8</groovy-al.version> <!-- Groovy 2.0.6 instead -->
+		<dependency-check-maven.version>1.4.5</dependency-check-maven.version>
+        <skipTests>true</skipTests>
+        <skipITs>true</skipITs>
 
-		<maven-failsafe-plugin.version>2.17</maven-failsafe-plugin.version>
-		<maven-surefire-plugin.version>2.17</maven-surefire-plugin.version>
-		<maven-surefire-report-plugin.version>2.17</maven-surefire-report-plugin.version>
-		<artifactory-maven-plugin.version>2.2.1</artifactory-maven-plugin.version>
-		<appassembler-maven-plugin.version>1.8.1</appassembler-maven-plugin.version>
-		<build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
-		<buildnumber-maven-plugin.version>1.3</buildnumber-maven-plugin.version>
-		<exec-maven-plugin.version>1.3.2</exec-maven-plugin.version>
-
-
-		<wagon-ssh.version>2.7</wagon-ssh.version>		
 	</properties>
 
 	<build>
+        <sourceDirectory>${project.basedir}/src/main/cpp</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/cpp</testSourceDirectory>
+        <directory>${project.basedir}/${aol}</directory>
+        <outputDirectory>${project.build.directory}/${aol}</outputDirectory>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <testOutputDirectory>${project.build.directory}/${aol}-test</testOutputDirectory>
+        <scriptSourceDirectory>src/main/scripts</scriptSourceDirectory>
 		<extensions>
 			<extension>
 				<groupId>org.apache.maven.wagon</groupId>
 				<artifactId>wagon-ssh-external</artifactId>
-				<version>1.0</version>
+				<version>${wagon-ssh.version}</version>
 			</extension>
 		</extensions>
 		<plugins>
+			  <!--plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${maven-failsafe-plugin.version}</version>
+				<configuration>
+				  <skipITs>true</skipITs>
+				</configuration>
+			  </plugin-->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${dependency-check-maven.version}</version>
+                <configuration>
+                    <skipProvidedScope>true</skipProvidedScope>
+                    <skipRuntimeScope>true</skipRuntimeScope>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <version>${groovy-maven-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.groovy</groupId>
+                        <artifactId>groovy-all</artifactId>
+                        <version>${groovy-al.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <!-- <phase>generate-resources</phase> -->
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source>
+                                project.properties["hostname"] = InetAddress.getLocalHost().getHostName()
+                            </source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
+				<version>${maven-deploy-plugin.version}</version>
 				<inherited>false</inherited>
 				<configuration>
 					<altDeploymentRepository>
-                        atlassian-m2-snapshot-repository::default::https://maven.atlassian.com/central-snapshot
+                        ${corporate.short.url}-m2-snapshot-repository::default::https://maven.${corporate.short.url}/central-snapshot
 					</altDeploymentRepository>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>1.3.1</version>
-				<!--dependencies>
+				<version>${maven-enforcer-plugin.version}</version>
+				<dependencies>
+                    <!-- <dependency> -->
+                        <!-- <groupId>com.atlassian.maven.enforcer</groupId> -->
+                        <!-- <artifactId>maven-enforcer-rules</artifactId> -->
+                        <!-- <version>1.3.1</version> -->
+                    <!-- </dependency> -->
                     <dependency>
                         <groupId>com.atlassian.maven.enforcer</groupId>
                         <artifactId>maven-enforcer-rules</artifactId>
-                        <version>1.3.1</version>
+                        <version>1.4.0</version>
                     </dependency>
-                </dependencies-->
+                    <dependency>
+                        <groupId>com.github.mikkoi.maven.enforcer.rule</groupId>
+                        <artifactId>char-set-encoding-rule</artifactId>
+                        <version>1.0</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>extra-enforcer-rules</artifactId>
+                        <version>${extra-enforcer-rules.version}</version>
+                    </dependency>
+                </dependencies>
 				<executions>
+                    <execution>
+                        <id>require-utf-8</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                        <rules>
+                            <requireEncoding>
+                                <encoding>${global.encoding}</encoding>
+                                <excludes>pom.xml</excludes>
+                                <!-- <includes>src/main/resources/**,src/test/resources/**</includes> -->
+                                <includes>src/main/cpp/**,src/test/cpp/**,src/test/resources/**</includes>
+                            </requireEncoding>
+                        </rules>
+                        <fastFail>false</fastFail>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-encoding-utf8</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <require-UTF8-Encoding implementation="com.github.mikkoi.maven.plugins.enforcer.rule.charsetencoding.CharacterSetEncodingRule">
+                                    <requireEncoding>${global.encoding}</requireEncoding>   <!-- Validate files against this encoding -->
+                                    <directory>src</directory>                              <!-- Which dirs to scan. -->
+                                    <excludeRegex>^.*\.(gif|jpg|png|ico)$</excludeRegex>        <!-- Exclude files with names matching regex below -->
+                                    <includeRegex>^.*\.java$</includeRegex>                 <!-- Include files with names matching regex below -->
+                                </require-UTF8-Encoding>
+                            </rules>
+                            <fail>true</fail><!-- Fail build if wrong encoding encountered. -->
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-require-property-diverges</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requirePropertyDiverges>
+                                    <property>project.url</property>
+                                    <regex>http://company/wiki/company-parent-pom/.*</regex> <!-- ${organization.url} -->
+                                </requirePropertyDiverges>
+                                <!-- <requirePropertyDiverges> -->
+                                    <!-- <property>project.groupId</property> -->  <!-- children must have a diverging groupId -->
+                                <!-- </requirePropertyDiverges> -->
+                                <!-- <requirePropertyDiverges> -->
+                                    <!-- <property>issue.url</property> -->
+                                    <!-- <regex>just a value</regex>  --> <!-- need to use a regex here as children's value will override the definition -->
+                                <!-- </requirePropertyDiverges> -->
+                                <!-- <requirePropertyDiverges> -->
+                                    <!-- <property>project.properties(issue.url)</property> -->
+                                <!-- </requirePropertyDiverges> -->
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
 					<execution>
 						<id>enforce-build-environment</id>
 						<phase>validate</phase>
@@ -479,7 +644,7 @@
 						<configuration>
 							<rules>
 								<requireMavenVersion>
-									<version>[3.0,)</version>
+									<version>[3.3.3,)</version>
 								</requireMavenVersion>
 								<requirePluginVersions>
 									<message>Best Practice is to always define plugin versions!</message>
@@ -583,13 +748,118 @@
 								</requireMavenVersion>
 							</rules>    
 						</configuration>
-					</execution>					
+					</execution>
+                    <execution>
+                        <id>enforce-os</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireOS>
+                                    <name>windows 7</name>
+                                    <family>dos</family>
+                                    <arch>amd64</arch>
+                                    <version>6.1</version>
+                                </requireOS>
+                            </rules>
+                            <!-- <fail>true</fail> -->
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-no-snapshots</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <reactorModuleConvergence>
+                                    <message>The reactor is not valid</message>
+                                    <ignoreModuleDependencies>true</ignoreModuleDependencies>
+                                </reactorModuleConvergence>
+                            </rules>
+                            <fail>false</fail>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-banned-dependencies</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedPlugins>
+                                    <excludes>
+                                        <exclude>org.codehaus.mojo:build-helper-maven-plugin</exclude>
+                                    </excludes>
+                                </bannedPlugins>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
+                  <!--execution>
+                    <id>enforce-property</id>
+                    <goals>
+                      <goal>enforce</goal>
+                    </goals>
+                    <configuration>
+                      <rules>
+                        <requireProperty>
+                          <property>basedir</property>
+                          <message>You must set a basedir property!</message>
+                          <regex>.*\d.*</regex>
+                          <regexMessage>The basedir property must contain at least one digit.</regexMessage>
+                        </requireProperty>
+                        <requireProperty>
+                          <property>project.version</property>
+                          <message>"Project version must be specified."</message>
+                          <regex>.*(\d|-SNAPSHOT)$</regex>
+                          <regexMessage>"Project version must end in a number or -SNAPSHOT."</regexMessage>
+                        </requireProperty>
+                      </rules>
+                      <fail>true</fail>
+                    </configuration>
+                  </execution-->
+                    <execution>
+                        <id>enforce-profile-is-active</id>
+                        <phase>initialize</phase>
+                        <goals>
+                          <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                          <rules>
+                            <requireActiveProfile>
+                              <!-- <profiles>p1,92</profiles> -->
+                              <all>false</all>
+                            </requireActiveProfile>
+                          </rules>
+                          <fail>true</fail>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-environment-variable-is-set</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireEnvironmentVariable>
+                                    <!-- <variableName>JAVA_HOME</variablename> -->
+                                 </requireEnvironmentVariable>
+                            </rules>
+                            <fail>true</fail>
+                        </configuration>
+                    </execution>
 				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
-				<version>2.6</version>
+				<version>${maven-resources-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>copy-license</id>
@@ -630,14 +900,14 @@
 				</configuration>
 				<inherited>false</inherited>
 			</plugin>
-			<plugin>
 				<!--
                 This plugin will collect current build number
                 from Git and save it into Maven property
                 -->
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.3</version>
+				<version>${buildnumber-maven-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>project-build-number</id>
@@ -666,8 +936,14 @@
 					<groupId>com.mycila</groupId>
 					<artifactId>license-maven-plugin</artifactId>
 					<!-- Lock down plugin version for build reproducibility -->
-					<version>2.6</version>
+					<version>${license-maven-plugin.version}</version>
 					<configuration>
+                        <properties>
+                            <inceptionYear>${project.inceptionYear}</inceptionYear>
+                            <latestYearOfContribution>${currentYear}</latestYearOfContribution>
+                            <latestYearOfContribution>${currentYearDynamic}</latestYearOfContribution>
+                        </properties>
+                        <!-- <useMissingFile>true</useMissingFile> -->
 						<skip>${license.skip}</skip>
 						<header>license.txt</header>
 						<strictCheck>true</strictCheck>
@@ -705,19 +981,72 @@
 							<artifactId>phenotips-license-verification-resources</artifactId>
 							<version>${buildtools.version}</version>
 						</dependency>
+						<dependency>
+							<groupId>org.codehaus.mojo</groupId>
+							<artifactId>license-maven-plugin</artifactId>
+							<version>1.12</version>
+						</dependency>
 					</dependencies>
 					<executions>
+                      <execution>
+                          <phase>generate-resources</phase>
+                          <id>create-license-list</id>
+                          <goals>
+                             <goal>aggregate-add-third-party</goal>
+                          </goals>
+                       </execution>
 						<execution>
+                            <id>check-licenses</id>
+                            <phase>initialize</phase>
 							<goals>
 								<goal>check</goal>
 							</goals>
 						</execution>
+                        <execution>
+                            <id>download-licenses</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>download-licenses</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>aggregate-download-licenses</id>
+                            <goals>
+                                <goal>aggregate-download-licenses</goal>
+                            </goals>
+                        </execution>
 					</executions>
-				</plugin>			
+				</plugin>
+                <plugin>
+                   <groupId>org.jasig.maven</groupId>
+                   <artifactId>maven-notice-plugin</artifactId>
+                    <version>${maven-notice-plugin.version}</version>
+                   <!-- <version>1.0.6</version>  -->
+                   <configuration>
+                        <!-- <noticeTemplate>https://source.jasig.org/licenses/NOTICE.template</noticeTemplate> -->
+                        <!-- <licenseMapping> -->
+                            <!-- <param>https://source.jasig.org/licenses/license-mappings.xml</param> -->
+                        <!-- </licenseMapping> -->
+                      <noticeTemplate>misc/NOTICE.template</noticeTemplate>
+                      <licenseMapping>
+                         <param>http://52north.github.io/cdn/licenses/license-mappings.xml</param>
+                      </licenseMapping>
+                      <generateChildNotices>false</generateChildNotices>
+                   </configuration>
+                   <executions>
+                      <execution>
+                         <id>check-license</id>
+                         <phase>initialize</phase>
+                         <goals>
+                            <goal>check</goal>
+                         </goals>
+                      </execution>
+                   </executions>
+                </plugin>                
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.2</version>
+					<version>${maven-compiler-plugin.version}</version>
 					<configuration>
 						<source>1.6</source>
 						<target>1.6</target>
@@ -746,17 +1075,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-clean-plugin</artifactId>
-					<version>2.4.1</version>
+					<version>${maven-clean-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-install-plugin</artifactId>
-					<version>2.5.1</version>
+					<version>${maven-install-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>2.12</version>
+					<version>${maven-failsafe-plugin.version}</version>
 					<configuration>
 						<encoding>${project.build.sourceEncoding}</encoding>
 						<failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
@@ -772,9 +1101,9 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.5</version>
+					<version>${maven-resources-plugin.version}</version>
 					<configuration>
-						<encoding>UTF-8</encoding>
+						<encoding>${project.build.sourceEncoding}</encoding>
 						<nonFilteredFileExtensions>
 							<nonFilteredFileExtension>tif</nonFilteredFileExtension>
 							<nonFilteredFileExtension>tiff</nonFilteredFileExtension>
@@ -786,17 +1115,17 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>3.4</version>
+					<version>${maven-site-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-verifier-plugin</artifactId>
-					<version>1.0</version>
+					<version>${maven-verifier-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-source-plugin</artifactId>
-					<version>2.1.2</version>
+					<version>${maven-source-plugin.version}</version>
 					<executions>
 						<execution>
 							<id>attach-sources</id>
@@ -823,7 +1152,7 @@
                     to the STDOUT as well, not only to the file.
                     -->
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>2.9</version>
+					<version>${maven-surefire-plugin}</version>
 					<configuration>
 						<excludes>
 							<exclude>**/*$*</exclude>
@@ -934,6 +1263,13 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-enforcer-plugin</artifactId>
 					<version>1.3.1</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>extra-enforcer-rules</artifactId>
+                            <version>${extra-enforcer-rules.version}</version>
+                        </dependency>
+                    </dependencies>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -943,7 +1279,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-invoker-plugin</artifactId>
-					<version>1.5</version>
+					<version>${maven-invoker-plugin.version}</version>
 					<configuration>
 						<mergeUserSettings>true</mergeUserSettings>
 						<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
@@ -953,11 +1289,21 @@
 						<postBuildHookScript>verify</postBuildHookScript>
 						<preBuildHookScript>setup</preBuildHookScript>
 						<projectsDirectory>src/it</projectsDirectory>
-						<settingsFile>${basedir}/src/it/settings.xml</settingsFile>
+						<!--settingsFile>${basedir}/src/it/settings.xml</settingsFile-->
+						<settingsFile>src/it/settings.xml</settingsFile>
 						<showErrors>true</showErrors>
 						<showVersion>false</showVersion>
 						<streamLogs>true</streamLogs>
-					</configuration>					
+					</configuration>
+					<executions>
+						<execution>
+							<id>integration-test</id>
+							<goals>
+								<goal>install</goal>
+							<goal>run</goal>
+							</goals>
+						</execution>
+					</executions>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -972,7 +1318,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-release-plugin</artifactId>
-					<version>2.5</version>
+					<version>${maven-release-plugin.version}</version>
 					<configuration>
 						<remoteTagging>true</remoteTagging>
 						<autoVersionSubmodules>true</autoVersionSubmodules>
@@ -1112,6 +1458,28 @@
 	</build>
 
 	<profiles>
+        <profile> 
+            <id>nix</id> 
+            <activation> 
+                <os>
+                    <family>unix</family>
+                </os> 
+            </activation> 
+            <properties> 
+                <hostname>${env.HOSTNAME}</hostname> 
+            </properties> 
+        </profile> 
+        <profile> 
+            <id>windows</id> 
+            <activation> 
+                <os>
+                    <family>Windows</family>
+                </os> 
+            </activation> 
+            <properties> 
+                <hostname>${env.COMPUTERNAME}</hostname> 
+            </properties> 
+        </profile>
 		<!--profile>
 			< ! - - http://www.yourkit.com/docs/80/help/agent.jsp - - >
 			<id>yourkit-profile</id>
@@ -1288,7 +1656,6 @@
 							<report>dependency-info</report>
 							<report>dependency-convergence</report>
 							<report>dependency-management</report>
-							<report>dependencies</report>
 							<report>project-team</report>
 							<report>mailing-list</report>
 							<report>issue-tracking</report>
@@ -1321,7 +1688,19 @@
 						</reports>
 					</reportSet>
 				</reportSets>
-			</plugin>		
+			</plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${dependency-check-maven.version}</version>
+                <reportSets>
+                    <reportSet>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) 2014, General Electric Company.
+  All rights reserved.
+-->
+<project name="${project.name}">
+	<!-- START SNIPPET: site-skin -->
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-fluido-skin</artifactId>
+		<version>1.3.1</version>
+	</skin>
+	<custom>
+		<fluidoSkin>
+			<topBarEnabled>true</topBarEnabled>
+			<sideBarEnabled>true</sideBarEnabled>
+			<topBarContainerStyle>width: 90%;</topBarContainerStyle>			
+			<sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
+			<navBarStyle>navbar-inverse</navBarStyle>
+			<copyrightClass>pull-right</copyrightClass>
+			<profile>pre-release</profile>
+			<leftColumnClass>span2</leftColumnClass>
+			<bodyColumnClass>span10</bodyColumnClass>			
+			<breadcrumbDivider>|</breadcrumbDivider>
+			<gitHub>
+				<projectId>${project.name}</projectId>
+				<ribbonOrientation>right</ribbonOrientation>
+				<ribbonColor>red</ribbonColor>
+			</gitHub>			
+			<topBarIcon>
+				<name>${project.name}</name>
+				<alt>${project.name}</alt>
+				<!--src>${_parent}/images/logo.jpg</src-->
+				<src>${_parent}/icons/quadcopter-16.png</src>
+				<href>index.html</href>
+			</topBarIcon>
+		</fluidoSkin>
+	</custom>
+	<!-- END SNIPPET: site-skin -->
+	<!-- START SNIPPET: site-banner -->
+	<bannerLeft>
+		<name>${project.name}</name>
+	</bannerLeft>
+	<bannerRight>
+		<!--src>${_parent}/images/icon.jpg</src-->
+		<src>${_parent}/icons/quadcopter-64.png</src>
+		<href>index.html</href>
+	</bannerRight>
+	<publishDate position="right" format="dd-MMM-yyyy"/>
+	<version position="right"/>
+	<!-- END SNIPPET: site-banner -->
+	<poweredBy>
+		<logo name="Maven"
+          href="http://maven.apache.org/"
+          img="${_parent}/images/logos/build-by-maven-black.png"/>
+	</poweredBy>
+	<body>
+		<breadcrumbs>
+			<item name="${project.name}" href="index.html"/>
+		</breadcrumbs>
+		<head>
+			<!--link rel="icon" href="${_parent}/images/logo.jpg"/>
+			<link rel="shortcut icon" href="${_parent}/images/logo.jpg"/-->
+			<link rel="icon" href="${_parent}/icons/quadcopter-16.png"/>
+			<link rel="shortcut icon" href="${_parent}/icons/quadcopter-64.png"/>
+		</head>
+		<links>
+
+			<item name="Maven" href="http://maven.apache.org/"/>
+			<item name="Doxygen" href="http://www.doxygen.org/"/>
+			<item name="AStyle" href="http://astyle.sourceforge.net/"/>
+		</links>
+		<menu name="Project Documentation">
+			<item name="Project Information" href="project-info.html" collapse="true">
+				<item name="About" href="index.html"/>
+				<item name="Project Summary" href="project-summary.html"/>
+				<item name="Project License" href="license.html"/>
+				<item name="Project Team" href="team-list.html"/>
+				<item name="Mailing Lists" href="mail-lists.html"/>
+				<item name="Source Repository" href="source-repository.html"/>
+				<item name="Issue Tracking" href="issue-tracking.html"/>
+				<item name="Distribution Management" href="distribution-management.html"/>
+				<item name="Dependencies" href="dependencies.html"/>
+				<item name="Dependency Management" href="dependency-management.html"/>
+				<item name="Dependency Convergence" href="dependency-convergence.html"/>
+				<item name="Dependency Information" href="dependency-info.html"/>
+				<item name="Project Plugins" href="plugins.html"/>
+				<item name="Plugin Management" href="plugin-management.html"/>
+			</item>
+			<item name="Project Reports" href="project-reports.html" collapse="true">
+				<item name="Third parties License" href="third-party-report.html"/>
+				<item name="Dashboard-report" href="dashboard-report.html"/>
+				<item name="Dashboard report details" href="dashboard-report-details.html"/>
+				<item name="Dependency updates" href="dependency-updates-report.html"/>
+				<item name="Property updates" href="property-updates-report.html"/>
+				<item name="Plugin updates" href="plugin-updates-report.html"/>
+				<item name="Change Log" href="changelog.html"/>
+			</item>
+		</menu>
+	</body>
+</project>

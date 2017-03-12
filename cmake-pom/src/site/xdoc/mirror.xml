@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<document>
+
+ <properties>
+  <title>First Time Mirroring</title>
+  <author email="dev@commons.apache.org">Commons Documentation Team</author>
+ </properties>
+
+ <body>
+  <section name="Mirroring For The First Time">
+    <p>
+    This document is intended to be read together with the main release instructions.
+    It describes the additional steps that need to be taken when cutting a release
+    for a component that will be mirrored for the first time.
+    As usual, the <code>example text</code> consistently assumes that version <em>1.2</em> 
+    of component <em>foo</em> is being released.
+    </p>
+    <subsection name='0 Understanding How Mirroring Works'>
+    <p>
+    Read <a href='http://www.apache.org/dev/mirrors.html'>the Apache mirroring guidelines</a> 
+    and then<a href='http://people.apache.org/~bodewig/mirror.html'>Stefan Bodewig's Step-By-Step Guide</a>.
+    Also read and digest this document before starting.
+    </p>
+    </subsection>
+    
+    <subsection name='1 Create Directory Structure'>
+    <p>
+    The mirrored releases are stored on Daedalus (www.apache.org). The base directory is:
+    </p>
+    <source>
+        /www/www.apache.org/dist/commons/foo                      
+    </source>
+    <p>
+    You need to create this directory and the following subdirectories:
+    </p>
+    <source>
+      |--- source/
+      |--- binaries/
+         |--- platform/  [optional if produce platform-specific binaries]  
+    </source>
+    <p>
+        Please double check that the permissions and ownership are correct. (Everyone should be 
+        able to change and read, the group (<em>commons</em>) should be able to write as well.)
+    </p>
+    <p>
+        The new directory should be automatically mirrored within forty-eight hours.
+    </p>
+    </subsection>
+    
+    <subsection name='2 Add Releases To Mirrored Directories'>
+        <p>
+        Follow the standard <a href='release.html'>release process</a> (sections 0-10) to create the distributions
+        and upload into the newly created directories. 
+        </p>
+    </subsection>
+    
+    <subsection name='3 Add Component Entries To Commons Downloads'>
+        <p>
+        Add entries for component <em>foo</em> to the Commons download pages.
+        </p>
+        <p>
+        Edit <code>commons-build/downloads/downloads.xml</code>. Add a new entry for the component,
+        if one does not exist. Please make make sure that your component 
+        fits in with the alphabetic ordering.
+        </p>
+
+        <p>
+        Test the changes but don't forget that the mirror links won't work until the pages are uploaded. 
+        Commit and update the Commons web site in the usual way (see
+        <a href='release.html#11 Update Commons Web Site'> standard release procedure section 11)</a>.
+        </p>
+    </subsection>
+    
+    <subsection name='4 Update commons release directory'>
+    <p>
+    Log on to people.apache.org
+    </p>
+    <pre>
+> cd /www/www.apache.org/dist/commons/foo
+    </pre>
+    <p>
+    If a <code>README.html</code> already exists, then edit it. Otherwise, create a new one.
+    This document should tell users that they should download newer releases from the mirrors.
+    </p>
+    </subsection>
+    <subsection name=' 5 Wait Until The Mirrors Are Updated'>
+    <p>
+    Please wait until you component's directory appears on the mirrors before continuing with the release and
+    posting your announcements. It's also good practice to test the download once it's been mirrored.
+    </p>
+    </subsection>
+  </section>  
+  <section name='Feedback'>
+        <p>
+        Feedback - yes please! 
+        </p>
+        <p>
+        Comments, critiques and error reports -
+        post them any and all to the dev mailing list at commons.apache.org. Please prefix with [doc].
+        </p>
+  </section>
+ </body>
+</document>

@@ -1,0 +1,981 @@
+<?xml version="1.0" ?>
+<!--
+   Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+
+<!-- $Id$ -->
+<document>
+	<properties>
+		<title>${project.name} Versioning Guidelines</title>
+		<author email="dev@commons.apache.org">Commons Documentation Team</author>
+		<author email="morgand@apache.org">Morgan Delagrange</author>
+		<author email="rwaldhoff@apache.org">Rodney Waldhoff</author>
+	</properties>
+	<body bgcolor="#ffffff" text="#000000" link="#525D76">
+		<section name="Overview">
+			<p>This document provides:</p>
+			<ul>
+				<li>
+					 A set of guidelines intended to help the Apache Commons
+					 team balance the need to provide a stable interface to
+					 clients with the growth and evolution of components over
+					 time,
+				</li>
+				<li>
+					 A language for describing the changes to a component
+					 and the types of incompatibilities such changes may
+					 create,
+				</li>
+				<li>
+					 A protocol for communicating those changes and
+					 incompatibilities to users and developers.
+				</li>
+			</ul>
+			<blockquote>
+				<p>
+					This document covers how the APR projects are versioned. Since the APR
+					projects are libraries, it is very important to define a stable API for users
+					of the libraries. However, we also need to move the libraries forward,
+					technologically. To balance these two needs, a strict policy of versioning is
+					required, which users can rely upon to understand the limitations,
+					restrictions, and the changes that can occur from one release of APR to the
+					next.
+				</p>
+				<ul>
+					<li><a href="#basics">The Basics</a></li>
+					<li><a href="#source">Source Compatibility</a></li>
+					<li><a href="#binary">Binary Compatibility</a></li>
+					<li><a href="#examples">Examples</a></li>
+					<li><a href="#strategy">Strategy</a></li>
+					<li><a href="#vsncheck">Version Checking</a></li>
+					<li><a href="#parallel">Parallel Installation</a></li>
+					<li><a href="#notes">Other Notes</a></li>
+				</ul>
+			</blockquote>
+			<a name="basics"/>
+			<subsection name="The Basics">
+				<blockquote>
+					<p> 
+						Versions are denoted using a standard triplet of integers:
+						<tt><strong>MAJOR.MINOR.PATCH</strong></tt>. The basic intent is that
+						<tt><strong>MAJOR</strong></tt> versions are incompatible, large-scale upgrades	of the API. 
+						<tt><strong>MINOR</strong></tt> versions retain source and binary compatibility with older minor versions, and changes in the
+						<tt><strong>PATCH</strong></tt> level are perfectly compatible, forwards and backwards.
+					</p>
+					<p> 
+						It is important to note that a library that has not reached 1.0.0 is
+						<strong>not</strong> subject to the guidelines described in this document.
+						Before a 1.0 release (version 0.x.y), the API <em>can</em> and <em>will</em> be
+						changing freely, without regard to the restrictions detailed below.
+					</p>
+				</blockquote>			
+			</subsection>
+			<a name="source"/>
+			<subsection name="Source Compatibility" color="#ffffff">	
+				<blockquote>
+					<p>
+						We define "source compatible" to mean that an application will continue to build without error, and that the semantics will remain unchanged.
+					</p>
+					<p>
+						Applications that write against a particular version will remain source-compatible against later versions, until the major number changes.
+                        However, if an application uses an API which has become available in a particular minor version, it (obviously) will no longer build or operate against previous minor versions.
+					</p>
+				</blockquote>			
+			</subsection>
+			<a name="binary"/>
+			<subsection name="Binary Compatibility" color="#ffffff">	
+				<blockquote>
+					<p> 
+						We define "binary compatible" to mean that a compiled application can
+						be linked (possibly dynamically) against the library and continue to function
+						properly.
+					</p>
+					<p>
+						Similar to source compatibility, an application that has been compiled
+						against a particular version will continue to be linkable against later
+						versions (unless the major number changes). It is possible that an application
+						will not be able to successfully link against a previous minor version.
+					</p>
+				</blockquote>			
+			</subsection>
+			<a name="exemple"/>
+			<subsection name="Exemple" color="#ffffff">
+				<tr>
+					<td>
+						<blockquote>
+							<p>Here are some examples to demonstrate the compatibility:</p>
+							<font color="#000000" size="-1" face="arial,helvetica,sanserif">
+								<table width="100%">
+									<tr>
+										<th bgcolor="#039acc">Original Version</th>
+										<th bgcolor="#039acc">New Version</th>
+										<th bgcolor="#039acc">Compatible?</th>
+									</tr>
+									<tr valign="top" bgcolor="#e0e0e0">
+										<td bgcolor="#a0ddf0">2.2.3</td>
+										<td bgcolor="#a0ddf0">2.2.4</td>
+										<td bgcolor="#a0ddf0">Yes<br /><font size="-1">Compatibility across patch versions is guaranteed.</font>
+										</td>
+									</tr>
+									<tr valign="top">
+										<td bgcolor="#a0ddf0">2.2.3</td>
+										<td bgcolor="#a0ddf0">2.2.1</td>
+										<td bgcolor="#a0ddf0">Yes<br /><font size="-1">Compatibility across patch versions is guaranteed.</font>
+										</td>
+									</tr>
+									<tr valign="top" bgcolor="#e0e0e0">
+										<td bgcolor="#a0ddf0">2.2.3</td>
+										<td bgcolor="#a0ddf0">2.3.1</td>
+										<td bgcolor="#a0ddf0">Yes<br /><font size="-1">Compatibility with later minor versions is guaranteed.</font>
+										</td>
+									</tr>
+									<tr valign="top">
+										<td bgcolor="#a0ddf0">2.2.3</td>
+										<td bgcolor="#a0ddf0">2.1.7</td>
+										<td bgcolor="#a0ddf0">No<br /><font size="-1">Compatibility with prior minor versions is not guaranteed.</font>
+										</td>
+									</tr>
+									<tr valign="top" bgcolor="#e0e0e0">
+										<td bgcolor="#a0ddf0">2.2.3</td>
+										<td bgcolor="#a0ddf0">3.0.0</td>
+										<td bgcolor="#a0ddf0">No<br /><font size="-1">Compatibility with different major versions is not guaranteed.</font>
+										</td>
+									</tr>
+									<tr valign="top">
+										<td bgcolor="#a0ddf0">2.2.3</td>
+										<td bgcolor="#a0ddf0">1.4.7</td>
+										<td bgcolor="#a0ddf0">No<br /><font size="-1">Compatibility with different major versions is not guaranteed.</font>
+										</td>
+									</tr>
+								</table>
+							</font>
+							<p>Note: while some of the cells say "no", it is <em>possible</em> that
+the versions may be compatible, depending very precisely upon the particular
+APIs used by the application.</p>
+						</blockquote>
+					</td>
+				</tr>			
+			</subsection>
+			<a name="strategy"/>
+			<subsection name="Strategy" color="#ffffff">	
+				<p>
+				This section details how we will build the code to meet the above
+				requirements and guidelines.
+				</p>
+				<h4>Patch Version</h4>	
+				<blockquote>
+					<p>
+						To retain perfect source and binary compatibility, a patch release can only
+						change function implementations. Changes to the API, to the signatures of
+						public functions, or to the interpretation of function parameters is
+						<strong>not allowed</strong>. Effectively, these releases are pure bug fix
+						releases.
+					</p>
+				</blockquote>
+				<h4>Minor Versions</h4>	
+				<blockquote>
+					<p>
+													Minor releases can introduce new functions, new symbolic and enumerated
+constants, and deprecate existing functions.
+					</p>
+					<dl>
+						<dt>
+														New functions
+						</dt>
+
+						<dd>
+							<p>
+														An application coded against an older minor release will still have
+          all of its functions available with their original signatures. 
+          Once an application begins to use a new function, however, they
+          will be unable to work against older minor versions.
+							</p>
+
+							<p>
+															It is tempting to say that introducing new functions might
+          create incompatibility across minor releases. If an
+          application takes advantage of an API that was introduced in
+          version 2.3 of a library, then it is not going to work
+          against version 2.2. However, we have stated that an any
+          application built against version 2.2 will continue to work
+          for all 2.x releases. Thus, an application that states
+          "requires 2.3 or later" is perfectly acceptable -- the user
+          or administrator simply upgrades the installed library to
+          2.3. This is a safe operation and will not break any other
+          application that was using the 2.2 library.
+							</p>
+
+							<p>
+															In other words, yes an incompatibility arises by mandating
+          that a specific version needs to be installed. But in
+          practice, this will not be a problem since upgrading to
+          newer versions is always safe.
+							</p>
+						</dd>
+
+						<dt>
+														New constants
+						</dt>
+						<dd>
+														Similar to functions, all of the original (old) constants will be
+          available to an application. An application can then choose to use
+          new constants to pick up new semantics and features.
+						</dd>
+
+						<dt>
+														Replacing functions
+						</dt>
+						<dd>
+														This gets a bit trickier. The original function
+							<strong>must</strong> remain available at the link-level so that an
+          application compiled against a minor version will continue to work
+          with later minor versions. Further, if an application is
+							<em>designed</em> to work with an earlier minor version, then we
+          don't want to suddenly change the requirements for that application.
+          This means that the headers cannot silently map an old function
+          into a newer function, as that would turn an application, say,
+          based on 1.2 into an application requiring the 1.4 or later release.
+
+							<p>
+															This means that functions cannot truly be replaced. The new,
+          alternate function can be made available in the header and
+          applications can choose to use it (and become dependent upon
+          the minor release where the function appears).
+							</p>
+
+							<p>
+															It is possible to design a set of headers where a macro will
+          always refer to the "latest" function available. Of course, if an
+          application chooses to use this macro, then the resulting
+          compiled-binary will be dependent upon whatever version it was
+          compiled against.  This strategy adds the new functionality for
+          applications, yet retains the necessary source and binary
+          compatibility for applications designed or built against previous
+          minor releases.
+							</p>
+
+							<p>
+															Constants (enumerated values and preprocessor macros) are
+								<strong>not</strong> allowed to change since an older application
+          will still be using them. Similarly, function signatures at the
+          link-level may not change, so that support for older, compiled
+          applications is maintained.
+							</p>
+						</dd>
+
+						<dt>
+														Deprecating functions
+						</dt>
+						<dd>
+														Since a function must remain available for applications coded
+          against a previous minor release, it is only possible to
+          "<em>deprecate</em>" a function. It <strong>cannot</strong> be
+          removed from the headers (so that source compatibility is retained)
+          and it cannot be removed from the library (so that binary
+          compatibility is retained).
+
+							<p>
+															If you deprecate a function in APR, please mark it as such in the
+          function documentation, using the doxygen "<code>\deprecated</code>"
+          tag.  Deprecated functions can only be removed in major releases.
+							</p>
+
+							<p>
+															A deprecated function should remain available <em>through</em>
+          the original header. The function prototype should remain in the
+          same header, or if moved to a "deprecated functions" header, then
+          the alternate header should be included by the original header. This
+          requirement is to ensure that source compatibility is retained.
+							</p>
+
+							<p>
+															Finally, if you are deprecating a function so that you can change
+          the name of the function, please use the method described above
+          under "Replacing functions", so that projects which use APR can
+          retain binary compatibility.
+							</p>
+
+							<p>
+															Note that all deprecated functions will be removed at the next 
+          major version bump.
+							</p>
+
+						</dd>
+					</dl>
+				</blockquote>
+				<h4>Major Versions</h4>
+				<blockquote>
+					<p>Any kind of change can be made during a major version release.  Particular
+types of changes that might occur:</p>
+					<ul>
+						<li>remove or change constants</li>
+						<li>remove (deprecated) functions</li>
+						<li>fold together macro-ized function replacements</li>
+					</ul>
+				</blockquote>
+			</subsection>			
+			<a name="vsncheck"/>				
+			<subsection name="Version Checking" color="#ffffff">
+				<p>
+					In many cases, the user of a library will need to check the version that
+they are compiling against, or that is being used at runtime. Because of the
+strict rules of source and binary compatibility, these checks can be simpler
+and more complicated depending on what is needed.
+				</p>
+				<h4>Compile-time Checks</h4>
+				<blockquote>
+					<p>
+													Libraries should make their version number available as compile-time
+constants. For example:
+					</p>
+					<blockquote>
+						<tt>
+    #define FOO_MAJOR_VERSION 1
+							<br />
+    #define FOO_MINOR_VERSION 4
+							<br />
+    #define FOO_PATCH_VERSION 0
+						</tt>
+					</blockquote>
+					<p>
+													The above symbols are the minimum required for this specification.
+					</p>
+					<p>
+													An application that desires, at compile-time, to decide on whether and how
+to use a particular library feature needs to only check two values: the major
+and the minor version. Since, by definition, there are no API changes across
+patch versions, that symbol can be safely ignored. Note that any kind of a
+check for a minimum version will then pin that application to at least that
+version. The application's installation mechanism should then ensure that that
+minimal version has been installed (for example, using RPM dependency checks).
+					</p>
+					<p>
+													If the feature changes across minor versions are source compatible, but
+are (say) simply different choices of values to pass into the library, then an
+application can support a wider variety of installed libraries if it avoids
+compile-time checks.
+					</p>
+				</blockquote>
+				<h4>Run-time Checks</h4>
+				<blockquote>
+					<p>
+													A library meeting this specification should support a way for an
+application to determine the library's version at <em>run-time</em>. This will
+usually be emboded as a simple function which returns the <tt>MAJOR</tt>,
+						<tt>MINOR</tt>, and <tt>PATCH</tt> triplet in some form.
+					</p>
+					<p>
+													Run-time checks are preferable in all cases. This type of check enables an
+application to run against a wider variety of minor releases of a library (the
+application is "<em>less coupled</em>" to a particular library release). Of
+course, if an application requires a function that was introduced in a later,
+minor release, then the application will require that, at least, that release
+is installed on the target system.
+					</p>
+					<p>
+													Run-time checks are particurly important if the application is trying to
+determine if the library has a particular bug that may need to be worked
+around, but has been fixed in a later release. If the bug is fixed in a patch
+release, then the only avenue for an application is to perform a runtime check.
+This is because an application cannot require a specific patch level of the
+library to be installed -- those libraries are perfectly forward and backwards
+compatible, and the administrator is free to choose any patch release, knowing
+that all applications will continue to function properly. If the bug was fixed
+in a minor release, then it is possible to use a compile-time check, but that
+would create a tighter coupling to the library.
+					</p>
+				</blockquote>				
+			</subsection>
+			<a name="parallel"/>			
+			<subsection name="Parallel Installation">
+				<p>
+					<em>Parallel installation</em> refers to the ability to install multiple
+versions of a library simultaneously -- they exist in parallel. This document
+will not discuss the full rationale for why this is important, but will instead
+detail how this versioning specification maps onto those concepts. Please refer
+to <a href="http://www106.pair.com/rhp/parallel.html">Havoc Pennington's
+document</a> for futher details and the rationale behind this form of parallel
+installation.
+				</p>
+				<h4>Library Naming</h4>
+				<blockquote>
+					<p>
+													On Unix-ish platforms, the library name should include the <tt>MAJOR</tt>
+version number: 
+					</p>
+					<blockquote><tt>libFOO-MAJOR.so</tt></blockquote>
+					<p>
+													This strategy allows an application to explicitly state which version
+of the library that it wants to link against. If the application was built for
+version 2 of the API, then it can link against <tt>libFOO-2.so</tt>. If another
+application was built against version 3 of the API, then it links against
+						<tt>libFOO-3.so</tt>. Since both libraries can reside on the system at the same
+time, both applications' needs can be satisfied.
+					</p>
+					<p>
+													Typically, shared libraries on Unix-ish platforms will set up symlinks from
+the <tt>.so</tt> library to specific versions of that library. For example:
+					</p>
+					<blockquote>
+						<tt>libFOO-MAJOR.so -&gt; libFOO-MAJOR.so.0<br />
+      libFOO-MAJOR.so.0 -&gt; libFOO-MAJOR.so.0.MINOR.PATCH</tt>
+					</blockquote>
+					<p>
+													In this configuration, applications will be bound to the <tt>.so.0</tt>
+library. The minor version does not come into play here because we want
+applications to dynamically load and link to the new library when a new minor
+version is installed. Thus, the <tt>MINOR</tt> and the <tt>PATCH</tt> values
+are relegated to the library name after the <tt>.so.0</tt> portion.
+					</p>
+					<p>
+													The implication here is that build systems for libraries should arrange
+to generate <tt>.so</tt> libraries matching the above pattern.  
+					</p>
+				</blockquote>	
+				<h4>Include Directories</h4>
+				<blockquote>
+					<p>
+													The default installation directory for a library's include files should
+specify the <tt>MAJOR</tt> version number, and should normally be installed as
+a subdirectory in some standard location. For example:
+					</p>
+					<blockquote>
+						<!-- stupid xemacs mode getting confused by forward slashes... -->
+						<tt>/usr/include/FOO-MAJOR/</tt>
+					</blockquote>
+					<p>
+													An application can place the <tt>FOO-MAJOR</tt> directory on its
+include path and include the files normally:
+					</p>
+					<blockquote>
+						<tt>#include &lt;FOO-stuff.h&gt;<br />
+      #include &lt;FOO-more.h&gt;</tt>
+					</blockquote>
+					<p>
+													Depending upon the API that the application is designed to work against, it
+can simply include different versions of the include directory.
+					</p>
+				</blockquote>
+				<h4>Other Files</h4>
+				<blockquote>
+					<p>
+						<strong>NOTE:</strong> There is no recommendation at this time for the
+best and proper handling of, say, <tt>FOO-config</tt> types of files. Or
+non-code types of files (e.g. things that typically get installed into areas
+like <tt>/usr/shared</tt>).
+					</p>
+					<p>
+						Further thought and exploration is needed here.
+					</p>
+				</blockquote>				
+			</subsection>
+			<a name="notes"/>
+			<subsection name="Other Notes">
+				<blockquote>
+					<p>
+									It is expected that other libraries, besides those in the APR project, will
+want to use the above definitions of versioning. This is quite fine, and those
+libraries can simply reference this document. Its canonical location is: 
+					</p>
+					<blockquote>http://apr.apache.org/versioning.html</blockquote>
+				</blockquote>			
+			</subsection>			
+		</section>
+		<section name="Interface Types">
+			<p>
+				We identify three distinct categories of interfaces or APIs
+				within a component: <strong><em>external</em></strong>, <strong><em>internal</em></strong>
+				and <strong><em>private</em></strong>.
+			</p>
+			<subsection name="The External Interface">
+				<p>
+					 The <strong><em>external</em></strong> interface of component is composed of the
+					 public-facing classes, interfaces, methods and attributes
+					 provided by the component--those that are likely to be
+					 used by clients to the component.
+				</p>
+				<p>
+					 For obvious reasons, we try to avoid or at least
+					 acknowledge changes to the external interface.
+				</p>
+				<p>
+					 The external interface of a component <strong><em>may</em></strong> correspond to
+					 the <code>public</code> scope classes and members, but this is not
+					 always the case. For example, a <code>protected</code> method of a class
+					 designed to be extended by the clients of a component may
+					 be deemed part of the external interface.
+				</p>
+			</subsection>
+			<subsection name="The Internal Interface">
+				<p>
+					 The <strong><em>internal</em></strong> interface of a component is composed of the
+					 classes, methods and attributes that are primarily or
+					 exclusively intended for use by the component
+					 implementation itself.  Clients to the component are
+					 unlikely to use or be concerned with the internal
+					 interface.
+				</p>
+				<p>
+					 The internal interface of a component <strong><em>may</em></strong> correspond to
+					 the <code>package</code> and <code>private</code> scope classes
+					 and members of the component, but this is not always the case.
+					 For example, a component implementation may be split over
+					 multiple packages and hence require <code>protected</code> scope
+					 members, or may, for design reasons, include an interface
+					 intended primarily for internal use.
+				</p>
+			</subsection>
+			<subsection name="The Private Interface">
+				<p>
+					 The <em>private</em> interface of a component is just that--the set
+					 of classes, methods and attributes that have "package" or <code>private</code> scope and hence cannot be used by external clients
+					 by virtue of the Java Language Specification.
+				</p>
+			</subsection>
+			<p>
+					Whenever a class, interface or member is considered part of the
+					external or internal interface of a component, it should be
+					clearly indicated as such in the JavaDoc comments or other
+					documentation for the component. (We may want to consider
+					adding custom JavaDoc tags for this purpose.)
+			</p>
+		</section>
+		<section name="Types of Change">
+			<p>
+					We can categorize the changes to a component according to
+					the degree to which these changes are compatible with
+					previous releases of the component.  We define three such
+					categories: <em>fully-compatible</em>, <em>interface-compatible</em>,
+					and <em>external-interface-compatible</em>.
+			</p>
+			<subsection name="Fully-Compatible Changes">
+				<p>
+					 Release <i>B</i> is said to be <em>fully-compatible</em>
+					 with Release <i>A</i> if <i>B</i> can simply replace <i>A</i>
+					 in (<a href="#note1">nearly</a>) all circumstances
+					 and deployments without changing the client code or
+					 configuration, and without changing the semantics of any
+					<code>public</code> or <code>protected</code> member.
+				</p>
+				<p>Examples of fully-compatible changes include:</p>
+				<ul>
+					<li>
+						adding a non-<code>abstract</code> method to a class
+					</li>
+					<li>
+						adding a class or interface to a component
+					</li>
+					<li>
+						changing a member from <code>private</code> to <code>protected</code>
+					</li>
+					<li>
+						changing a <code>private</code> attribute to a <code>private</code> method 
+					</li>
+					<li>
+						changing an implementation such that a given external library is no longer needed by the component 
+					</li>
+					<li>
+						changing a method or class from <code>final</code> to non-<code>final</code> 
+					</li>
+					<li>
+						deprecating, but not otherwise changing, a class, inteface or member 
+					</li>
+					<li>
+						changing a component in order to fix a defect (a deviation from the documented or reasonably expected behavior), 
+						assuming no other incompatibilities are introduced 
+					</li>
+				</ul>
+				<p>
+					Examples of changes which are not fully-compatible include:
+				</p>
+				<ul>
+					<li>
+						  a release that no longer supports the same set of JREs,
+						  or that requires new libraries to be added to the
+						  classpath
+					</li>
+					<li>
+						changing a <code>public</code> or <code>protected</code> method signature
+					</li>
+					<li>
+						  changing the default value of an attribute in a
+						  behaviour-impacting way
+					</li>
+					<li>
+						  removing a class, interface, method or attribute
+						  from either the internal or external interface of
+						  the component
+					</li>
+				</ul>
+				<p>
+					 Note that not every non-fully-compatible change
+					 will cause compilation or readily apparent
+					 run-time problems.
+				</p>
+				<p>
+					 Generally speaking, a fully-compatible change will at
+					 most change the private interface of a component, or simply
+					 add classes, methods and attributes whose use is optional
+					 to both internal and external interface clients.
+				</p>
+			</subsection>
+			<subsection name="Interface-Compatible Changes">
+				<p>
+					 Release <i>B</i> is said to be "interface-compatible" with
+					 Release <i>A</i> if (<a href="#note1">nearly</a>) all clients
+					 that can be compiled with <i>A</i> in the classpath can
+					 also be compiled with <i>B</i> in the classpath,
+					 without changing the semantics of any <code>public</code> or
+					<code>protected</code> member.  A configuration or
+					 classpath change may be required.
+				</p>
+				<p>
+					Examples of interface-compatible changes include:
+				</p>
+				<ul>
+					<li>
+						all fully-compatible changes
+					</li>
+					<li>
+						 changing a component such that it now depends
+						 upon an additional external library or
+						 configuration file
+					</li>
+				</ul>
+				<p>
+					  Examples of changes which are not interface-compatible
+					  include:
+				</p>
+				<ul>
+					<li>
+						changing a public or protected method signature
+					</li>
+					<li>
+						 changing the default value of an attribute in a
+						 behaviour changing way
+					</li>
+					<li>
+						 removing a class, interface, method or attribute
+						 from either the internal or external interface of the
+						 component
+					</li>
+				</ul>
+				<p>
+					  Generally speaking, an interface-compatible change
+					  will at most change the private interface of a
+					  component, or simply add classes, methods and
+					  attributes whose use is optional to both
+					  internal and external interface clients.
+				</p>
+			</subsection>
+			<subsection name="External-Interface-Compatible Changes">
+				<p>
+					 Release <i>B</i> is said to be "external-interface-compatible"
+					 with Release <i>A</i> if (<a href="#note1">nearly</a>) all
+					 clients that depend only on the external interface of a
+					 component and that can be compiled with <i>A</i> in the
+					 classpath can also be compiled with <i>B</i> in the classpath,
+					 without changing the semantics of any member in the
+					<em>external</em> interface. A configuration or classpath
+					 change may be required.
+				</p>
+				<p>
+					Examples of external-interface-compatible changes include:
+				</p>
+				<ul>
+					<li>
+						all interface-compatible changes
+					</li>
+					<li>
+						  removing a class, interface, method or attribute from
+						  the internal interface of the component
+					</li>
+					<li>
+						  a change to the internal or private interface of a
+						  component that requires a change in configuration
+						  settings or in the external libraries required to
+						  use the component
+					</li>
+					<li>
+						  changes to the internal or private interface of a
+						  component without impacting the external interface
+					</li>
+				</ul>
+				<p>
+					  Examples of changes which are not
+					  external-interface-compatible include:
+				</p>
+				<ul>
+					<li>
+						changing the method signature of any method that is
+						part of the external interface of the component
+					</li>
+					<li>
+						changing the default value of any attribute that is
+						part of the external interface of the component in a
+						behaviour changing way
+					</li>
+					<li>
+						removing a class, interface, method or attribute from
+						external interface of the component
+					</li>
+				</ul>
+				<p>
+					  Generally speaking, external-interface-compatible
+					  changes correspond to changes to at most the internal
+					  interface of the component or the addition of
+					  optional classes, interfaces or members to the
+					  external interface.
+				</p>
+			</subsection>
+		</section>
+		<section name="Release Types">
+			<p>
+				We identify five types of releases: "Major", "Minor",
+				"Point", "Beta" and "Milestone".
+			</p>
+			<p>
+				Developers are encouraged to "upgrade" a release to a
+				stronger type whenever the nature or scope of the change
+				warrants it.
+			</p>
+			<subsection name="Major Releases">
+				<p>
+					 Major releases signify significant changes to a component.
+					 Developers <em>may</em> perform a major release if there have been
+					 substantial improvements to the component.  Developers
+					<em>must</em> perform a major release whenever the new release
+					 is not at least interface-compatible the previous release.
+				</p>
+			</subsection>
+			<subsection name="Minor Releases">
+				<p>
+					 Minor releases signify enhancements to a component that do
+					 not necessitate a major release.  Developers <em>may</em> perform a
+					 minor release if the release is at least
+					 external-interface-compatible with the previous release.
+					<p>
+					</p>
+						 In other words, whenever a client depends upon at most
+						 the external interface of a component with a given minor
+						 release, it will work with all subsequent minor releases
+						 within that major release.
+				</p>
+			</subsection>
+			<subsection name="Point Releases">
+				<p>
+					 A point release typically involves simple bug fixes or
+					 optimizations that do not introduce new features.
+					 Developers <em>may</em> perform a point release if the release
+					 is at least interface-compatible with the
+					 previous release.
+				</p>
+				<p>
+					 In other words, whenever a client depends upon a component
+					 with a given point release, it will work with all
+					 subsequent point releases within that minor release.
+				</p>
+			</subsection>
+			<subsection name="Beta Releases">
+				<p>
+					 Developers may, at their option, perform a beta preview of
+					 any major, minor or point release.  Beta releases may be
+					 performed for a variety of purposes such as:
+				</p>
+				<ul>
+					<li>
+						Showcasing new, untested features
+					</li>
+					<li>
+						Providing early corrections of critical bugs
+					</li>
+					<li>
+						Generating a stable version before large-scale changes
+					</li>
+				</ul>
+				<p>
+					 While every effort should be made to ensure the quality of
+					 released code, "beta" releases are essentially provided
+					 as-is with no guarantees of stability or maintenance.
+				</p>
+			</subsection>
+			<subsection name="Milestone Releases">
+				<p>
+					 Developers may, at their option, offer a milestone
+					 preview of any major release.  A milestone release is
+					 appropriate when part of the overall component is
+					 fully functioning and the team wants to make it more widely
+					 available for testing. Those features implemented and those
+					 remaining to be implemented should be clearly defined and
+					 documented.
+				</p>
+				<p>
+					 While every effort should be made to ensure the quality of
+					 released code, "milestone" releases are essentially
+					 provided as-is with no guarantees of stability or
+					 maintenance.
+				</p>
+			</subsection>
+		</section>
+		<section name="Release Numbers">
+			<subsection name="Initial Release Number">
+				<p>
+					 A component's initial release number is generally
+					 1.0[.0], unless there have been versioned beta releases.
+				</p>
+			</subsection>
+			<subsection name="Dissecting the Release Number">
+				<p>
+					 A release number is comprised of 3 components: the major
+					 release number, the minor release number, and an optional
+					 point release number.  Here is a sample release number:
+				</p>
+				<p><code>2.0.4</code></p>
+				<p>and it can be broken into three parts:</p>
+				<ul>
+					<li>major release: 2</li>
+					<li>minor release: 0</li>
+					<li>point release: 4</li>
+				</ul>
+				<p>
+					 The next release of this component would increment the
+					 appropriate part of the release number, depending on the
+					 type of release (major, minor, or point).  For example, a
+					 subsequent minor release would be version 2.1, or a
+					 subsequent major release would be 3.0.
+				</p>
+				<p>
+					 Note that release numbers are composed of three _integers_,
+					 not three <em>digits</em>.  Hence if the current release is
+					 3.9.4, the next minor release is 3.10.0.
+				</p>
+			</subsection>
+			<subsection name="Beta Release Numbers">
+				<p>
+					 Beta releases are denoted by adding
+					 "B&lt;beta version number&gt;" after the release number.  For
+					 example, if the current release version is 2.0.4, and a
+					 developer wished to preview the next major release, the
+					 release would be labeled 3.0-B1.
+				</p>
+			</subsection>
+			<subsection name="Milestone Release Numbers">
+				<p>
+					 Milestone releases are denoted by adding
+					 "M&lt;milestone version number&gt;" after the release number.  For
+					 example, if the current release version is 2.0.4, and a
+					 developer wished to preview the next major release, the
+					 release would be labeled 3.0-M1.
+				</p>
+			</subsection>
+		</section>
+		<section name="Development States">
+			<p>
+				We identify four possible states: "in development", "beta",
+				"released", and "unsupported".
+			</p>
+			<subsection name="In Development State">
+				<p>
+					  When a component is "in development", it is new and still
+					  relatively unstable. Typically components in this state
+					  do not have any binary releases available beyond the
+					  nightly builds.  Users should be made aware that this
+					  component may change its functionality or interface before
+					  a stable release is achieved.  A "milestone" release may
+					  be made while the component is still "in development" to
+					  make the features currently implemented more widely
+					  available for testing in a more stable test version.
+				</p>
+			</subsection>
+			<subsection name="Beta State">
+				<p>
+					  When a component has made significant progress toward
+					  release-quality code, the committers may vote to perform
+					  a "beta" release.  At this point, the component state will
+					  change from "in development" to "beta".  The component will
+					  remain in this state until it is ready for its first major
+					  release.
+				</p>
+				<p>
+					  Note that developers may skip vote to skip the "beta" state
+					  and go directly to "released", if the component is
+					  sufficiently stable.
+				</p>
+			</subsection>
+			<subsection name="Released State">
+				<p>
+					 When a new component is finally production-quality, the
+					 developers may vote to perform the first major release.
+					 At this point, the component status will be changed from
+					 "beta" to "released".  In the future this component will
+					 always be considered to be in the "released" state, even
+					 when new releases are initiated. The only exception is in
+					 the case of "unsupported" components.
+				</p>
+			</subsection>
+			<subsection name="Unsupported State">
+				<p>
+					 Under rare circumstances, committers may vote to make a
+					 component "unsupported", if there are no resources to
+					 maintain the library or if it has been completely
+					 supplanted by another component.  Only "released"
+					 components may become "unsupported"; components in other
+					 states will simply be terminated after a brief warning
+					 period.
+				</p>
+			</subsection>
+		</section>
+		<section name="Comments">
+			<p>
+				  Using this approach it is possible to very precisely and
+				  concisely define the dependencies between a component and
+				  its clients.
+			</p>
+			<p>
+				  For example, suppose that the application Foo depends
+				  (only) upon features of the commons-superwidget component
+				  that are part of the external interface in release 2.3.0.
+				  Then the maintainers of Foo can state with a high degree of
+				  certainty that Foo will work with any 2.x release of
+				  superwidget (x &gt;= 3).
+			</p>
+			<p>
+				  Similarly, suppose the application Bar depends upon
+				  features of superwidget that were part of the internal
+				  interface of release 2.3.0.  Then the maintainers of Bar
+				  can state with a high degree of certainty that Bar will
+				  work with any 2.3.x release of superwidget.  Only once 2.4
+				  (or 3.0) is released will Bar's developers have to
+				  re-evaluate.
+			</p>
+		</section>
+		<section name="End Notes">
+			<dl>
+				<dt><a name="note1">Note 1</a></dt>
+				<dd>
+					 We say "nearly" here since there are rare
+					 or unusual circumstances in which changes that are usually
+					 "safe" may cause problems for a small number of users.
+					 For example, adding a new method to a component class
+					 shouldn't in general cause problems for any clients. But it
+					 may cause problems for some clients who've extended that
+					 class and already added a method with the same signature in
+					 their subclass.
+				</dd>
+			</dl>
+		</section>
+	</body>
+</document>

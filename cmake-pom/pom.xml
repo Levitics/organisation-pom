@@ -1,0 +1,103 @@
+<?xml version="1.0"  encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+		http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+		<groupId>io.github.levitics</groupId>
+		<artifactId>base-pom</artifactId>
+		<version>1.0-SNAPSHOT</version>
+        <relativePath>../base-pom</relativePath>
+    </parent>
+
+    <groupId>io.github.levitics</groupId>
+    <artifactId>cmake-pom</artifactId>
+    <packaging>pom</packaging>
+
+    <name>${corporateName} Cmake POM  for c++ project</name>
+    <licenses>
+        <license>
+            <name>BSD License</name>
+            <url>https://maven.atlassian.com/public/licenses/license.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://jira.atlassian.com/browse/CMAKEPOM</url>
+    </issueManagement>
+	
+	<properties>
+		<distribution.snapshotRepositoryName>${corporate} Public Development Snapshot Repository</distribution.snapshotRepositoryName>
+		<distribution.snapshotRepositoryId>m2-snapshot-repository</distribution.snapshotRepositoryId>
+		<distribution.snapshotRepositoryUrl>https://maven.${corporate}/public-snapshot</distribution.snapshotRepositoryUrl>
+		
+		<distribution.releaseRepositoryName>${corporate} Public Release Distribution Repository</distribution.releaseRepositoryName>
+		<distribution.releaseRepositoryId>m2-release-repository</distribution.releaseRepositoryId>
+		<distribution.releaseRepositoryUrl>https://maven.${corporate}/public</distribution.releaseRepositoryUrl>
+        
+        <cmake.command>cmake</cmake.command>
+        <make.command>make</make.command>
+        <sonar.language>c++</sonar.language>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.cxx.cppcheck.reportPath>.sonar/reports-cppcheck/cppcheck-result-*.xml</sonar.cxx.cppcheck.reportPath>		
+		<sonar.cxx.customrules.reportPath>.sonar/reports-cpplint/cpplint-result-*.xml</sonar.cxx.customrules.reportPath>
+		<sonar.cxx.rats.reportPath>.sonar/reports-rats/rats-result-*.xml</sonar.cxx.rats.reportPath>
+		<sonar.cxx.vera.reportPath>.sonar/reports-vera++/vera++-result-*.xml</sonar.cxx.vera.reportPath>
+		<sonar.cxx.xunit.reportPath>.sonar/reports-xunit/xunit-result-*.xml</sonar.cxx.xunit.reportPath>		
+		<sonar.cxx.bulleyescoverage.reportPath>.sonar/reports-bullseye/bullseyecoverage-result-*.xml</sonar.cxx.bulleyescoverage.reportPath>
+		<sonar.cxx.bulleyescoverage.itReportPath>.sonar/reports-it-bullseye/bullseyecoverage-result-*.xml</sonar.cxx.bulleyescoverage.itReportPath> 
+		<sonar.cxx.bulleyescoverage.calcomplexity>true</sonar.cxx.bulleyescoverage.calcomplexity>			
+		<sonar.host.url>http://latest-fiasco:9000</sonar.host.url>
+        <cmake.generator.win32>Visual Studio 14 2015</cmake.generator.win32>
+        <cmake.generator.win64>Visual Studio 14 2015 Win64</cmake.generator.win64>
+        <cmake.generator.mingw>MinGW Makefiles</cmake.generator.mingw>
+        <cmake.generator.unix>Unix Makefiles</cmake.generator.unix>
+	</properties>
+	
+    <distributionManagement>
+        <repository>
+			<id>${distribution.releaseRepositoryId}</id>
+			<url>${distribution.releaseRepositoryUrl}</url>
+			<name>${distribution.releaseRepositoryName}</name>           
+        </repository>
+        <snapshotRepository>
+			<id>${distribution.snapshotRepositoryId}</id>
+			<url>${distribution.snapshotRepositoryUrl}</url>
+			<name>${distribution.snapshotRepositoryName}</name>  
+        </snapshotRepository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>nexusStaging</id>
+            <activation>
+              <property>
+                <name>!skip.nexus.staging</name>
+              </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                        <artifactId>nexus-staging-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
+            </plugin>
+        </plugins>
+    </reporting>
+</project>
